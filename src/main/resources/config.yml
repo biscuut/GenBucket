@@ -119,3 +119,9 @@ messages:
   wrong-direction: '&cThis bucket cannot be placed in this direction.' # Message when someone tries to place a horizontal gen bucket against the top or bottom of a block.
   not-enough-space-buy: '&cYou do not have enough space in your inventory!' # Message when a player's inventory is full and they try to buy a gen bucket when shop-drop-item-if-full: false.
   buy-success: '&aYou bought {amount} genbucket(s)!' # Message when someone successfully buys a gen bucket.
+
+# Whether to show a message when there is a new version available. Keep this true to stay on top of bug fixes and new features.
+show-update-messages: true
+
+# Please do not change.
+config-version: 1.0

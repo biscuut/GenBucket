@@ -14,6 +14,7 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -153,6 +154,13 @@ public class PlayerEvents implements Listener {
                 } else if (main.getConfigValues().getExitName().equals(e.getCurrentItem().getItemMeta().getDisplayName())) {
                     p.closeInventory();
                 }
+        }
+    }
+
+    @EventHandler
+    public void onJoin(PlayerJoinEvent e) {
+        if (main.getConfigValues().showUpdateMessage() && e.getPlayer().isOp()) {
+            main.getUtils().checkUpdates(e.getPlayer());
         }
     }
 }

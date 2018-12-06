@@ -6,13 +6,24 @@ author: Biscut
 depend: [Vault]
 commands:
   genbucket:
-    aliases: [gb, bucket]
+    description: Opens the genbucket shop.
+    aliases: [gb, bucket, genbucketshop, bucketshop]
   genbucketadmin:
+    description: The main command for admin/console tools.
     aliases: [gba]
 permissions:
-  genbucket.admin:
+  simplegenbuckets.admin:
+    children:
+      simplegenbuckets.give: true
+      simplegenbuckets.reload: true
+      simplegenbuckets.bypass: true
+  simplegenbuckets.give:
     default: op
-  genbucket.shop:
+  simplegenbuckets.reload:
+    default: op
+  simplegenbuckets.bypass:
+    default: op
+  simplegenbuckets.shop:
     default: true
-  genbucket.use:
+  simplegenbuckets.use:
     default: true

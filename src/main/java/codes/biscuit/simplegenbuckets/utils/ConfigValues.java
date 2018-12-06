@@ -412,4 +412,8 @@ public class ConfigValues {
         return main.getConfig().getDouble("items."+bucket+".gui-price");
     }
 
+    public boolean showUpdateMessage() {
+        return main.getConfig().getBoolean("show-update-messages");
+    }
+
 }
