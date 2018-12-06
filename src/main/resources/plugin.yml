@@ -1,0 +1,18 @@
+main: codes.biscuit.simplegenbuckets.SimpleGenBuckets
+name: SimpleGenBuckets
+version: ${version}
+api-version: 1.13
+author: Biscut
+depend: [Vault]
+commands:
+  genbucket:
+    aliases: [gb, bucket]
+  genbucketadmin:
+    aliases: [gba]
+permissions:
+  genbucket.admin:
+    default: op
+  genbucket.shop:
+    default: true
+  genbucket.use:
+    default: true
