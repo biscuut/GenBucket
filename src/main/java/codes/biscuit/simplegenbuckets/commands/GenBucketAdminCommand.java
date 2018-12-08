@@ -66,14 +66,7 @@ public class GenBucketAdminCommand implements CommandExecutor {
                                                 return false;
                                             }
                                         }
-                                        ItemStack item = main.getConfigValues().getBucketIngameItemStack(bucket, giveAmount);
-                                        ItemMeta itemMeta = item.getItemMeta();
-                                        itemMeta.setDisplayName(main.getConfigValues().getBucketName(bucket));
-                                        itemMeta.setLore(main.getConfigValues().getBucketItemLore(bucket));
-                                        item.setItemMeta(itemMeta);
-                                        if (main.getConfigValues().bucketItemShouldGlow(bucket)) {
-                                            item = main.getUtils().addGlow(item);
-                                        }
+                                        ItemStack item = main.getUtils().getBucketItemStack(bucket, giveAmount);
                                         HashMap excessItems;
                                         if (!main.getConfigValues().giveShouldDropItem()) {
                                             if (giveAmount < 65) {
@@ -126,6 +119,7 @@ public class GenBucketAdminCommand implements CommandExecutor {
                 case "reload":
                     if (sender.hasPermission("simplegenbuckets.reload")) {
                         main.reloadConfig();
+                        main.getUtils().reloadRecipes();
                         sender.sendMessage(ChatColor.GREEN + "Successfully reloaded the config. Most values have been instantly updated.");
                     } else {
                         if (!main.getConfigValues().getNoPermissionCommandMessage().equals("")) {
@@ -159,7 +153,7 @@ public class GenBucketAdminCommand implements CommandExecutor {
             sender.sendMessage(ChatColor.GRAY.toString() + ChatColor.STRIKETHROUGH + "--------------" + ChatColor.GRAY +"[" + ChatColor.LIGHT_PURPLE + ChatColor.BOLD + " SimpleGenBuckets " + ChatColor.GRAY + "]" + ChatColor.GRAY.toString() + ChatColor.STRIKETHROUGH + "--------------");
             sender.sendMessage(ChatColor.LIGHT_PURPLE + "● /gba give <player> <bucket> [amount] " + ChatColor.GRAY + "- Give a player (a) genbucket(s)");
             sender.sendMessage(ChatColor.LIGHT_PURPLE + "● /gba reload " + ChatColor.GRAY + "- Reload the config");
-            sender.sendMessage(ChatColor.LIGHT_PURPLE + "● /gba bypass " + ChatColor.GRAY + "- Place genbuckets anywhere infinitely!");
+            sender.sendMessage(ChatColor.LIGHT_PURPLE + "● /gba bypass " + ChatColor.GRAY + "- Buy and place genbuckets anywhere infinitely and for free!");
             sender.sendMessage(ChatColor.GRAY.toString() + ChatColor.ITALIC + "v" + main.getDescription().getVersion() + " by Biscut");
             sender.sendMessage(ChatColor.GRAY.toString() + ChatColor.STRIKETHROUGH + "------------------------------------------------");
         }

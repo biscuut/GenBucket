@@ -61,45 +61,49 @@ public class HookUtils {
             return true;
         }
         if (!p.hasPermission("simplegenbuckets.use")) {
-            if (!silent) cannotPlaceNoPermission(p);
+            if (!silent)cannotPlaceNoPermission(p);
+            return false;
+        }
+        if (loc.getBlockY() > main.getConfigValues().getMaxY()) {
+            if (!silent)cannotPlaceYLevel(p);
             return false;
         }
         if (enabledHooks.contains(Hooks.MASSIVECOREFACTIONS)) {
             if (main.getConfigValues().needsFaction() && !massiveCoreHook.hasFaction(p)) {
-                if (!silent) cannotPlaceNoFaction(p);
+                if (!silent)cannotPlaceNoFaction(p);
                 return false;
             }
             if (!massiveCoreHook.isWilderness(loc) && !massiveCoreHook.locationIsFactionClaim(loc, p)) {
-                if (!silent) cannotPlaceWilderness(p);
+                if (!silent)cannotPlaceWilderness(p);
                 return false;
             }
             if (main.getConfigValues().cantPlaceWilderness() && massiveCoreHook.isWilderness(loc)) {
-                if (!silent) cannotPlaceWilderness(p);
+                if (!silent)cannotPlaceWilderness(p);
                 return false;
             }
         } else if (enabledHooks.contains(Hooks.FACTIONSUUID)) {
             if (main.getConfigValues().needsFaction() && !factionsUUIDHook.hasFaction(p)) {
-                if (!silent) cannotPlaceNoFaction(p);
+                if (!silent)cannotPlaceNoFaction(p);
                 return false;
             }
             if (!factionsUUIDHook.isWilderness(loc) && !factionsUUIDHook.locationIsFactionClaim(loc, p)) {
-                if (!silent) cannotPlaceWilderness(p);
+                if (!silent)cannotPlaceWilderness(p);
                 return false;
             }
             if (main.getConfigValues().cantPlaceWilderness() && factionsUUIDHook.isWilderness(loc)) {
-                if (!silent) cannotPlaceWilderness(p);
+                if (!silent)cannotPlaceWilderness(p);
                 return false;
             }
         }
         if (enabledHooks.contains(Hooks.WORLDGUARD)) {
             if (!worldGuardHook.playerCanPlaceHere(loc, p)) {
-                if (!silent) cannotPlaceRegion(p);
+                if (!silent)cannotPlaceRegion(p);
                 return false;
             }
         }
         if (enabledHooks.contains(Hooks.WORLDBORDER)) {
             if (!worldBorderHook.isInsideBorder(loc)) {
-                if (!silent) cannotPlaceRegion(p);
+                if (!silent)cannotPlaceRegion(p);
                 return false;
             }
         }
@@ -131,6 +135,12 @@ public class HookUtils {
     private void cannotPlaceNoPermission(Player p) {
         if (!main.getConfigValues().getNoPermissionPlaceMessage().equals("")) {
             p.sendMessage(main.getConfigValues().getNoPermissionPlaceMessage());
+        }
+    }
+
+    private void cannotPlaceYLevel(Player p) {
+        if (!main.getConfigValues().getCannotPlaceYLevelMessage().equals("")) {
+            p.sendMessage(main.getConfigValues().getCannotPlaceYLevelMessage());
         }
     }
 

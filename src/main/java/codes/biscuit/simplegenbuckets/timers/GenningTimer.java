@@ -15,27 +15,34 @@ public class GenningTimer extends BukkitRunnable {
     private SimpleGenBuckets main;
     private BlockFace direction;
     private int limit;
-    private int counter = 0;
+    private int blockCounter = 0;
+    private int chunkCounter = 0;
+    private boolean chunkLimited;
 
-    public GenningTimer(Player p, Material genMaterial, Block startingBlock, BlockFace direction, SimpleGenBuckets main, int limit) {
+    public GenningTimer(Player p, Material genMaterial, Block startingBlock, BlockFace direction, SimpleGenBuckets main, int limit, boolean chunkLimited) {
         this.p = p;
         this.genMaterial = genMaterial;
         this.currentBlock = startingBlock;
         this.direction = direction;
         this.main = main;
         this.limit = limit;
+        this.chunkLimited = chunkLimited;
     }
 
     @Override
     public void run() {
-        if (counter < limit && !(currentBlock.getY() > currentBlock.getWorld().getMaxHeight()) &&
+        if (blockCounter < limit && !(currentBlock.getY() > main.getConfigValues().getMaxY()) &&
                 main.getHookUtils().canBePlacedHere(p, currentBlock.getLocation(), true) && main.getConfigValues().getIgnoredBlockList().contains(currentBlock.getType())) {
             main.getHookUtils().logBlock(p, currentBlock.getLocation(), currentBlock.getType(), currentBlock.getData());
             currentBlock.setType(genMaterial);
+            if (chunkLimited && currentBlock.getChunk() != currentBlock.getRelative(direction).getChunk()) {
+                chunkCounter++;
+                if (chunkCounter >= main.getConfigValues().getMaxChunks()) cancel();
+            }
             currentBlock = currentBlock.getRelative(direction);
         } else {
             cancel();
         }
-        counter++;
+        blockCounter++;
     }
 }

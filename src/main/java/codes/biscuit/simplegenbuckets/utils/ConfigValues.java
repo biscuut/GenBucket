@@ -6,10 +6,7 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class ConfigValues {
 
@@ -34,7 +31,10 @@ public class ConfigValues {
     }
 
     public Long getBlockSpeedDelay() {
-        return Math.round(1 / main.getConfig().getDouble("blockspeed") * 20);
+        double bps = main.getConfig().getDouble("blockspeed");
+        if (bps<1) bps = 1;
+        else if (bps>20) bps = 20;
+        return Math.round(1 / bps * 20);
     }
 
     public Material getBucketBlockMaterial(String bucket) {
@@ -52,7 +52,7 @@ public class ConfigValues {
         return mat;
     }
 
-    public ItemStack getBucketIngameItemStack(String bucket, int amount) {
+    ItemStack getBucketIngameItemStack(String bucket, int amount) {
         String rawMaterial = main.getConfig().getString("items."+bucket+".item.material");
         Material mat;
         if (rawMaterial.contains(":")) {
@@ -100,7 +100,7 @@ public class ConfigValues {
         return main.getConfig().isSet("items."+bucket);
     }
 
-    public boolean bucketItemShouldGlow(String bucket) {
+    boolean bucketItemShouldGlow(String bucket) {
         return main.getConfig().getBoolean("items."+bucket+".item.glow");
     }
 
@@ -108,7 +108,7 @@ public class ConfigValues {
         return main.getConfig().getConfigurationSection("items").getKeys(false);
     }
 
-    public List<String> getBucketItemLore(String bucket) {
+    List<String> getBucketItemLore(String bucket) {
         List<String> uncolouredList = main.getConfig().getStringList("items."+bucket+".item.lore");
         List<String> colouredList = new ArrayList<>();
         for (String s : uncolouredList) {
@@ -117,7 +117,7 @@ public class ConfigValues {
         return colouredList;
     }
 
-    public String getBucketName(String bucket) {
+    String getBucketName(String bucket) {
         return ChatColor.translateAlternateColorCodes('&', main.getConfig().getString("items."+bucket+".item.name"));
     }
 
@@ -183,16 +183,20 @@ public class ConfigValues {
         return ChatColor.translateAlternateColorCodes('&', main.getConfig().getString("messages.not-enough-space-buy"));
     }
 
+    public String getCannotPlaceYLevelMessage() {
+        return ChatColor.translateAlternateColorCodes('&', main.getConfig().getString("messages.cannot-place-y-level"));
+    }
+
     public String getBuyConfirmationMessage(int amount) {
         return ChatColor.translateAlternateColorCodes('&', main.getConfig().getString("messages.buy-success").replace("{amount}", String.valueOf(amount)));
     }
 
-    public int getVerticalLimit() {
-        return main.getConfig().getInt("vertical-limit");
+    public int getVerticalTravel() {
+        return main.getConfig().getInt("vertical-travel");
     }
 
-    public int getHorizontalLimit() {
-        return main.getConfig().getInt("horizontal-limit");
+    public int getHorizontalTravel() {
+        return main.getConfig().getInt("horizontal-travel");
     }
 
     public boolean needsFaction() {
@@ -416,4 +420,71 @@ public class ConfigValues {
         return main.getConfig().getBoolean("show-update-messages");
     }
 
+    public int getMaxY() {
+        return main.getConfig().getInt("y-limit");
+    }
+
+    public int getMaxChunks() {
+        return main.getConfig().getInt("chunk-travel");
+    }
+
+    Set<String> getRecipeBuckets() {
+        if (main.getConfig().getConfigurationSection("recipes") != null) {
+            return main.getConfig().getConfigurationSection("recipes").getKeys(false);
+        } else {
+            return null;
+        }
+    }
+
+    HashMap<Character, HashMap<Material, Short>> getIngredients(String bucket) {
+        HashMap<Character, HashMap<Material, Short>> ingredients = new HashMap<>();
+        for (String ingredientSymbol : main.getConfig().getConfigurationSection("recipes."+bucket+".symbols").getKeys(false)) {
+            String rawMaterial = main.getConfig().getString("recipes."+bucket+".symbols."+ingredientSymbol);
+            Material mat;
+            short damage = 1;
+            if (rawMaterial.contains(":")) {
+                String[] materialSplit = rawMaterial.split(":");
+                try {
+                    mat = Material.valueOf(materialSplit[0]);
+                } catch (IllegalArgumentException ex) {
+                    main.getLogger().severe("Your ingredient material for symbol "+ingredientSymbol+" in bucket "+bucket+" is invalid!");
+                    return null;
+                }
+                try {
+                    damage = Short.valueOf(materialSplit[1]);
+                } catch (IllegalArgumentException ex) {
+                    main.getLogger().severe("Your ingredient data/damage for symbol "+ingredientSymbol+" in bucket "+bucket+" is invalid!");
+                    return null;
+                }
+            } else {
+                try {
+                    mat = Material.valueOf(rawMaterial);
+                } catch (IllegalArgumentException ex) {
+                    main.getLogger().severe("Your ingredient material for symbol "+ingredientSymbol+" in bucket "+bucket+" is invalid!");
+                    return null;
+                }
+            }
+            HashMap<Material, Short> item = new HashMap<>();
+            item.put(mat, damage);
+            ingredients.put(ingredientSymbol.toCharArray()[0], item);
+        }
+        if (ingredients.size() > 0) {
+            return ingredients;
+        } else {
+            return null;
+        }
+    }
+
+    int getRecipeAmount(String bucket) {
+        return main.getConfig().getInt("recipes."+bucket+".outcome-amount");
+    }
+
+    List<String> getRecipeShape(String bucket) {
+        List<String> shapeList = main.getConfig().getStringList("recipes."+bucket+".recipe");
+        if(shapeList.size() == 3) {
+            return shapeList;
+        } else {
+            return null;
+        }
+    }
 }

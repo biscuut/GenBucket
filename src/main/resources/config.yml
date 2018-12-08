@@ -9,41 +9,49 @@
 #                          v${version} by Biscut                        #
 ##################################################################
 
-# How many blocks should be placed per second
+# How many blocks should be placed per second. (1-20)
 blockspeed: 2
 
-# How many blocks this gen travels upwards
-vertical-limit: 256
+# The max y-limit blocks can gen at.
+y-limit: 256
 
-# How many blocks this gen travels horizontally
-horizontal-limit: 40
+# How many blocks UPWARDS/OMNIDIRECTIONAL gens travel vertically.
+vertical-travel: 256
 
-# Whether to drop items if a players inventory is full when doing the /gba give command (false means it will show an error message instead)
+# How many blocks HORIZONTAL/OMNIDIRECTIONAL gen travel horizontally.
+horizontal-travel: 32
+
+# How many chunks HORIZONTAL_CHUNK/OMNIDIRECTIONAL_CHUNK gens travel horizontally.
+chunk-travel: 1
+
+# Whether to drop items if a players inventory is full when doing the /gba give command. (false means it will show an error message instead)
 give-drop-item-if-full: true
 
-# Whether to drop items if a players inventory is full when buying from the shop (false means it will show an error message instead)
+# Whether to drop items if a players inventory is full when buying from the shop. (false means it will show an error message instead)
 shop-drop-item-if-full: false
 
 # Define your genbuckets here
 items:
-  vertical_cobble: # The name of the bucket, can be anything. No spaces!
+  omnidirectional_cobble: # The name of the bucket, can be anything. No spaces!
     item:
-      name: '&7Vertical Cobble Bucket' # The item name when in the player's inventory.
+      name: '&7Omnidirectional Cobble Bucket' # The item name when in the player's inventory.
       material: 'COBBLESTONE'  # The item material when in the player's inventory. Feel free to use data/damage values.
       lore:
         - '&7This magical block creates cobblestone' # The item lore when in the player's inventory.
         - '&7from the ground to the sky when placed!'
       glow: true # Whether the item in the player's inventory should glow.
     block:
-      material: 'COBBLESTONE' # The block that will gen when this bucket is placed
+      material: 'COBBLESTONE' # The block that will gen when this bucket is placed.
       # The direction of this bucket, can be one of these 4:
       # 'DOWNWARDS' - Will gen down from the block it's placed on. (TIP: Do not use for blocks with gravity like sand/gravel)
       # 'HORIZONTAL' - Will gen sideways from the block it's placed on. The direction depends on what the bucket was placed against.
+      # 'HORIZONTAL_CHUNK' - Will gen sideways from the block it's placed on. The direction depends on what the bucket was placed against.
       # 'UPWARDS' - Will gen up from the block it's placed on
       # 'OMNIDIRECTIONAL' - Can gen upwards, downwards, or horizontally. The direction depends on what the bucket was placed against.
+      # 'OMNIDIRECTIONAL_CHUNK' - Can gen upwards, downwards, or horizontally by chunk. The direction depends on what the bucket was placed against.
       type: 'OMNIDIRECTIONAL'
     gui:
-      name: '&7Vertical Cobble Bucket (BUY)' # The item name shown in the shop gui.
+      name: '&7Omnidirectional Cobble Bucket (BUY)' # The item name shown in the shop gui.
       material: 'COBBLESTONE' # The material name shown in the shop gui.
       lore:
       - '&7Buy a magical block that creates cobblestone' # The item lore shown in the shop gui.
@@ -55,6 +63,30 @@ items:
     gui-price: 200 # The cost of this item to buy this item from the GUI.
     infinite: false # Whether the gen has unlimited places, but will instead charge to place. (also known as printer mode genbuckets)
     infinite-place-price: 100.5 # How much to charge the player per placement if infinite (above) is set to true.
+  horizontal_obby:
+    item:
+      name: '&7Horizontal Obsidian Bucket'
+      material: 'OBSIDIAN'
+      lore:
+        - '&7This magical block creates obsidian'
+        - '&7sideways when placed!'
+      glow: true
+    block:
+      material: 'OBSIDIAN'
+      type: 'HORIZONTAL'
+    gui:
+      name: '&7Horizontal Cobble Bucket (BUY)'
+      material: 'OBSIDIAN'
+      lore:
+        - '&7Buy a magical block that creates obsidian'
+        - '&7sideways when placed!'
+        - '&7COST: &e$200'
+        - '&eShift-click&7 to buy 16! (&e$3200)'
+      glow: true
+      slot: 11
+    gui-price: 1000
+    infinite: false
+    infinite-place-price: 500
 
 # All the settings for the shop GUI.
 gui:
@@ -91,6 +123,18 @@ ignored-blocks:
 #  - 'STATIONARY_LAVA'
 #  - 'STATIONARY_WATER'
 
+# Define custom recipes for your buckets here.
+recipes:
+  horizontal_obby: # Specify the bucket name here.
+    symbols: # Specify symbols to represent items (makes your life easier). The symbol can be any single-letter character. Don't list symbols that you don't use in recipe:.
+      O: 'OBSIDIAN'
+      B: 'BARRIER'
+    recipe: # Shape your recipe here, look at it like a crafting table.
+      - 'OBO' # The 3 slots on the first line are the 3 slots on the top of a crafting table
+      - '   ' # These are the slots in the middle.
+      - '   ' # These are the slots at the end. To craft this bucket, you need obsidian, barrier, obsidian on the top row of the crafting table.
+    outcome-amount: 1
+
 # Hook into other plugins for checks when genning blocks.
 hooks:
   factions: true # Check each block's territory
@@ -119,6 +163,7 @@ messages:
   wrong-direction: '&cThis bucket cannot be placed in this direction.' # Message when someone tries to place a horizontal gen bucket against the top or bottom of a block.
   not-enough-space-buy: '&cYou do not have enough space in your inventory!' # Message when a player's inventory is full and they try to buy a gen bucket when shop-drop-item-if-full: false.
   buy-success: '&aYou bought {amount} genbucket(s)!' # Message when someone successfully buys a gen bucket.
+  cannot-place-y-level: '&cYou cannot place gens at this y-level!' # Message when someone places a gen bucket above the y-limit:.
 
 # Whether to show a message when there is a new version available. Keep this true to stay on top of bug fixes and new features.
 show-update-messages: true

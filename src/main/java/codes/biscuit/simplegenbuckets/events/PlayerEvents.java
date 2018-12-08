@@ -35,6 +35,12 @@ public class PlayerEvents implements Listener {
             String bucket = main.getUtils().matchBucket(e.getItemInHand());
             Player p = e.getPlayer();
             if (main.getHookUtils().canBePlacedHere(p, e.getBlock().getLocation(), false) && main.getHookUtils().takeBucketPlaceCost(p, bucket)) {
+                if (main.getConfigValues().getBucketType(bucket).equals("HORIZONTAL") && (e.getBlockAgainst().getFace(e.getBlock()).equals(BlockFace.UP) || e.getBlockAgainst().getFace(e.getBlock()).equals(BlockFace.DOWN))) {
+                    if (!main.getConfigValues().getWrongDirectionMessage().equals("")) {
+                        p.sendMessage(main.getConfigValues().getWrongDirectionMessage());
+                    }
+                    return;
+                }
                 startGenBucket(bucket, p, e.getBlock(), e.getBlockAgainst().getFace(e.getBlock()));
                 if (main.getConfigValues().isNotInfinite(bucket) && !main.getHookUtils().getBypassPlayers().contains(p.getUniqueId())) {
                     ItemStack removeItem = e.getItemInHand();
@@ -60,6 +66,13 @@ public class PlayerEvents implements Listener {
             String bucket = main.getUtils().matchBucket(e.getItem());
             Player p = e.getPlayer();
             if (main.getHookUtils().canBePlacedHere(p, e.getClickedBlock().getRelative(e.getBlockFace()).getLocation(), false) && main.getHookUtils().takeBucketPlaceCost(p, bucket)) {
+                if ((main.getConfigValues().getBucketType(bucket).equals("HORIZONTAL") || main.getConfigValues().getBucketType(bucket).equals("HORIZONTAL_CHUNK")) &&
+                        (e.getBlockFace().equals(BlockFace.UP) || e.getBlockFace().equals(BlockFace.DOWN))) {
+                    if (!main.getConfigValues().getWrongDirectionMessage().equals("")) {
+                        p.sendMessage(main.getConfigValues().getWrongDirectionMessage());
+                    }
+                    return;
+                }
                 startGenBucket(bucket, p, e.getClickedBlock().getRelative(e.getBlockFace()), e.getBlockFace());
                 if (main.getConfigValues().isNotInfinite(bucket) && !main.getHookUtils().getBypassPlayers().contains(p.getUniqueId())) {
                     ItemStack removeItem = e.getItem();
@@ -78,6 +91,7 @@ public class PlayerEvents implements Listener {
     }
 
     private void startGenBucket(String bucket, Player p, Block block, BlockFace direction) {
+        boolean chunkLimited = false;
         switch (main.getConfigValues().getBucketType(bucket)) {
             case "UPWARDS":
                 direction = BlockFace.UP;
@@ -85,20 +99,16 @@ public class PlayerEvents implements Listener {
             case "DOWNWARDS":
                 direction = BlockFace.DOWN;
                 break;
-            case "HORIZONTAL":
-                if (direction.equals(BlockFace.UP) || direction.equals(BlockFace.DOWN)) {
-                    if (!main.getConfigValues().getWrongDirectionMessage().equals("")) {
-                        p.sendMessage(main.getConfigValues().getWrongDirectionMessage());
-                    }
-                }
+            case "HORIZONTAL_CHUNK": case "OMNIDIRECTIONAL_CHUNK":
+                chunkLimited = true;
                 break;
         }
-        int limit = main.getConfigValues().getVerticalLimit();
+        int limit = main.getConfigValues().getVerticalTravel();
         if (direction != BlockFace.UP && direction != BlockFace.DOWN) {
-            limit = main.getConfigValues().getHorizontalLimit();
+            limit = main.getConfigValues().getHorizontalTravel();
         }
         new GenningTimer(p, main.getConfigValues().getBucketBlockMaterial(bucket), block,
-                direction, main, limit).runTaskTimer(main, 0L, main.getConfigValues().getBlockSpeedDelay());
+                direction, main, limit, chunkLimited).runTaskTimer(main, 0L, main.getConfigValues().getBlockSpeedDelay());
     }
 
     @EventHandler
@@ -117,14 +127,7 @@ public class PlayerEvents implements Listener {
                         price *= main.getConfigValues().getBulkBuyAmount();
                     }
                     if (main.getHookUtils().takeShopMoney(p, price)) {
-                        ItemStack item = main.getConfigValues().getBucketIngameItemStack(bucket, amount);
-                        ItemMeta itemMeta = item.getItemMeta();
-                        itemMeta.setDisplayName(main.getConfigValues().getBucketName(bucket));
-                        itemMeta.setLore(main.getConfigValues().getBucketItemLore(bucket));
-                        item.setItemMeta(itemMeta);
-                        if (main.getConfigValues().bucketItemShouldGlow(bucket)) {
-                            item = main.getUtils().addGlow(item);
-                        }
+                        ItemStack item = main.getUtils().getBucketItemStack(bucket, amount);
                         HashMap excessItems;
                         if (!main.getConfigValues().shopShouldDropItem()) {
                             if (p.getInventory().firstEmpty() == -1) {

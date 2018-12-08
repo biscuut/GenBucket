@@ -24,7 +24,9 @@ public class SimpleGenBuckets  extends JavaPlugin {
         getCommand("genbucketadmin").setTabCompleter(gbaCommand.TAB_COMPLETER);
         getConfig().options().copyDefaults(true);
         saveDefaultConfig();
+        reloadConfig();
         hookUtils = new HookUtils(this);
+        utils.registerRecipes();
     }
 
     public ConfigValues getConfigValues() {
