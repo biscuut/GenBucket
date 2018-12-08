@@ -2,6 +2,7 @@ package codes.biscuit.simplegenbuckets.utils;
 
 import codes.biscuit.simplegenbuckets.SimpleGenBuckets;
 import net.md_5.bungee.api.ChatColor;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -16,11 +17,11 @@ public class ConfigValues {
         this.main = main;
     }
 
-    HashMap<Material, String> getBucketMaterialList() {
-        HashMap<Material, String> materials = new HashMap<>();
+    HashMap<String, Material> getBucketMaterialList() {
+        HashMap<String, Material> materials = new HashMap<>();
         for (String key : main.getConfig().getConfigurationSection("items").getKeys(false)) {
             try {
-                materials.put(Material.valueOf(main.getConfig().getString("items."+key+".item.material")), key);
+                materials.put(key, Material.valueOf(main.getConfig().getString("items."+key+".item.material")));
             } catch (Exception ignored) {}
         }
         return materials;

@@ -31,12 +31,12 @@ public class Utils {
     }
 
     public String matchBucket(ItemStack item) {
-        if (main.getConfigValues().getBucketMaterialList().keySet().contains(item.getType()) && item.hasItemMeta() && item.getItemMeta().hasDisplayName()) {
-            Set<Map.Entry<Material, String>> materialList = main.getConfigValues().getBucketMaterialList().entrySet();
-            for (Map.Entry<Material, String> material : materialList) {
-                if (material.getKey().equals(item.getType())) {
-                    if (main.getConfigValues().getBucketItemName(material.getValue()).equals(item.getItemMeta().getDisplayName())) {
-                        return material.getValue();
+        if (main.getConfigValues().getBucketMaterialList().values().contains(item.getType()) && item.hasItemMeta() && item.getItemMeta().hasDisplayName()) {
+            Set<Map.Entry<String, Material>> materialList = main.getConfigValues().getBucketMaterialList().entrySet();
+            for (Map.Entry<String, Material> material : materialList) {
+                if (material.getValue().equals(item.getType())) {
+                    if (main.getConfigValues().getBucketItemName(material.getKey()).equals(item.getItemMeta().getDisplayName())) {
+                        return material.getKey();
                     }
                 }
             }

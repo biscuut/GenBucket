@@ -63,7 +63,8 @@ items:
     gui-price: 200 # The cost of this item to buy this item from the GUI.
     infinite: false # Whether the gen has unlimited places, but will instead charge to place. (also known as printer mode genbuckets)
     infinite-place-price: 100.5 # How much to charge the player per placement if infinite (above) is set to true.
-  horizontal_obby:
+
+  horizontal_obby: # Bucket two, follows the same format as above. Feel free to copy and paste the example bucket and just change the values.
     item:
       name: '&7Horizontal Obsidian Bucket'
       material: 'OBSIDIAN'
@@ -125,7 +126,7 @@ ignored-blocks:
 
 # Define custom recipes for your buckets here.
 recipes:
-  horizontal_obby: # Specify the bucket name here.
+  omnidirectional_cobble: # Specify the bucket name here.
     symbols: # Specify symbols to represent items (makes your life easier). The symbol can be any single-letter character. Don't list symbols that you don't use in recipe:.
       O: 'OBSIDIAN'
       B: 'BARRIER'
@@ -133,6 +134,14 @@ recipes:
       - 'OBO' # The 3 slots on the first line are the 3 slots on the top of a crafting table
       - '   ' # These are the slots in the middle.
       - '   ' # These are the slots at the end. To craft this bucket, you need obsidian, barrier, obsidian on the top row of the crafting table.
+    outcome-amount: 1
+  horizontal_obby:
+    symbols:
+      R: 'BEDROCK'
+    recipe:
+      - 'R  '
+      - 'R  '
+      - 'R  '
     outcome-amount: 1
 
 # Hook into other plugins for checks when genning blocks.
