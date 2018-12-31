@@ -4,6 +4,7 @@ version: ${version}
 api-version: 1.13
 author: Biscut
 depend: [Vault]
+softdepend: [MassiveCore, CoreProtect, Factions, WorldGuard, WorldBorder]
 commands:
   genbucket:
     description: Opens the genbucket shop.
