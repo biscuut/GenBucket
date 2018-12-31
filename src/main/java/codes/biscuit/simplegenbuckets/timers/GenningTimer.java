@@ -29,6 +29,7 @@ public class GenningTimer extends BukkitRunnable {
         this.chunkLimited = chunkLimited;
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     public void run() {
         if (blockCounter < limit && !(currentBlock.getY() > main.getConfigValues().getMaxY()) &&

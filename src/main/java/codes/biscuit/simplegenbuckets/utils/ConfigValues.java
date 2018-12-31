@@ -2,7 +2,6 @@ package codes.biscuit.simplegenbuckets.utils;
 
 import codes.biscuit.simplegenbuckets.SimpleGenBuckets;
 import net.md_5.bungee.api.ChatColor;
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -93,8 +92,8 @@ public class ConfigValues {
         return materialList;
     }
 
-    public String getBucketType(String bucket) {
-        return main.getConfig().getString("items."+bucket+".block.type");
+    public String getBucketDirection(String bucket) {
+        return main.getConfig().getString("items."+bucket+".block.direction");
     }
 
     public boolean bucketExists(String bucket) {
@@ -130,14 +129,14 @@ public class ConfigValues {
         return main.getConfig().getBoolean("shop-drop-item-if-full");
     }
 
-    public String getGiveMessage(Player p, int amount) {
+    public String getGiveMessage(Player p, int amount, String bucket) {
         return ChatColor.translateAlternateColorCodes('&', main.getConfig().getString("messages.give"))
-                .replace("{player}", p.getName()).replace("{amount}", String.valueOf(amount));
+                .replace("{player}", p.getName()).replace("{amount}", String.valueOf(amount)).replace("{bucket}", bucket);
     }
 
-    public String getReceiveMessage(int amount) {
+    public String getReceiveMessage(int amount, double price, String bucket) {
         return ChatColor.translateAlternateColorCodes('&', main.getConfig().getString("messages.receive"))
-                .replace("{amount}", String.valueOf(amount));
+                .replace("{amount}", String.valueOf(amount)).replace("{price}", String.valueOf(price)).replace("{amount}", String.valueOf(amount)).replace("{bucket}", bucket);
     }
 
     public String getNoPermissionCommandMessage() {

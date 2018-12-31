@@ -16,7 +16,6 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.HashMap;
 
@@ -35,7 +34,7 @@ public class PlayerEvents implements Listener {
             String bucket = main.getUtils().matchBucket(e.getItemInHand());
             Player p = e.getPlayer();
             if (main.getHookUtils().canBePlacedHere(p, e.getBlock().getLocation(), false) && main.getHookUtils().takeBucketPlaceCost(p, bucket)) {
-                if (main.getConfigValues().getBucketType(bucket).equals("HORIZONTAL") && (e.getBlockAgainst().getFace(e.getBlock()).equals(BlockFace.UP) || e.getBlockAgainst().getFace(e.getBlock()).equals(BlockFace.DOWN))) {
+                if (main.getConfigValues().getBucketDirection(bucket).equals("HORIZONTAL") && (e.getBlockAgainst().getFace(e.getBlock()).equals(BlockFace.UP) || e.getBlockAgainst().getFace(e.getBlock()).equals(BlockFace.DOWN))) {
                     if (!main.getConfigValues().getWrongDirectionMessage().equals("")) {
                         p.sendMessage(main.getConfigValues().getWrongDirectionMessage());
                     }
@@ -66,7 +65,7 @@ public class PlayerEvents implements Listener {
             String bucket = main.getUtils().matchBucket(e.getItem());
             Player p = e.getPlayer();
             if (main.getHookUtils().canBePlacedHere(p, e.getClickedBlock().getRelative(e.getBlockFace()).getLocation(), false) && main.getHookUtils().takeBucketPlaceCost(p, bucket)) {
-                if ((main.getConfigValues().getBucketType(bucket).equals("HORIZONTAL") || main.getConfigValues().getBucketType(bucket).equals("HORIZONTAL_CHUNK")) &&
+                if ((main.getConfigValues().getBucketDirection(bucket).equals("HORIZONTAL") || main.getConfigValues().getBucketDirection(bucket).equals("HORIZONTAL_CHUNK")) &&
                         (e.getBlockFace().equals(BlockFace.UP) || e.getBlockFace().equals(BlockFace.DOWN))) {
                     if (!main.getConfigValues().getWrongDirectionMessage().equals("")) {
                         p.sendMessage(main.getConfigValues().getWrongDirectionMessage());
@@ -92,7 +91,7 @@ public class PlayerEvents implements Listener {
 
     private void startGenBucket(String bucket, Player p, Block block, BlockFace direction) {
         boolean chunkLimited = false;
-        switch (main.getConfigValues().getBucketType(bucket)) {
+        switch (main.getConfigValues().getBucketDirection(bucket)) {
             case "UPWARDS":
                 direction = BlockFace.UP;
                 break;

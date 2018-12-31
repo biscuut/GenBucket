@@ -30,7 +30,8 @@ give-drop-item-if-full: true
 # Whether to drop items if a players inventory is full when buying from the shop. (false means it will show an error message instead)
 shop-drop-item-if-full: false
 
-# Define your genbuckets here
+# Define your genbuckets here. This part may get a bit confusing with all the indents, its best to copy one of the examples
+# and then just edit it to your liking. Feel free to double check your formatting @ http://yaml-online-parser.appspot.com/.
 items:
   omnidirectional_cobble: # The name of the bucket, can be anything. No spaces!
     item:
@@ -49,7 +50,7 @@ items:
       # 'UPWARDS' - Will gen up from the block it's placed on
       # 'OMNIDIRECTIONAL' - Can gen upwards, downwards, or horizontally. The direction depends on what the bucket was placed against.
       # 'OMNIDIRECTIONAL_CHUNK' - Can gen upwards, downwards, or horizontally by chunk. The direction depends on what the bucket was placed against.
-      type: 'OMNIDIRECTIONAL'
+      direction: 'OMNIDIRECTIONAL'
     gui:
       name: '&7Omnidirectional Cobble Bucket (BUY)' # The item name shown in the shop gui.
       material: 'COBBLESTONE' # The material name shown in the shop gui.
@@ -74,7 +75,7 @@ items:
       glow: true
     block:
       material: 'OBSIDIAN'
-      type: 'HORIZONTAL'
+      direction: 'HORIZONTAL'
     gui:
       name: '&7Horizontal Cobble Bucket (BUY)'
       material: 'OBSIDIAN'
@@ -158,8 +159,8 @@ factions:
 
 # Customize messages sent to the player. Set to '' for no message.
 messages:
-  give: '&aYou gave {player} {amount} genbuckets(s).' # Message to the person who executed /gba give.
-  receive: '&aYou have received {amount} genbuckets(s).' # Message to the person who received a gen bucket from /gba give.
+  give: '&aYou gave {player} {amount} {bucket} genbuckets(s).' # Message to the person who executed /gba give.
+  receive: '&aYou have received {amount} {bucket} genbuckets(s).' # Message to the person who received a gen bucket from /gba give. OTHER PLACEHOLDERS: {price} - The price it would have been if it was bought.
   no-permission-command: '&cNo permission!' # Message when someone does not have the permission to use a command.
   no-permission-place: '&cYou cannot place genbuckets!' # Message when someone does not have the permission to place gen buckets.
   no-faction: '&cYou must have a faction to use a genbucket!' # Message when someone tries to place a gen bucket without a faction when requires-faction: true.

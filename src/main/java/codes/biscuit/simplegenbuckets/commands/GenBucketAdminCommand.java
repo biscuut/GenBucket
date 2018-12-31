@@ -9,7 +9,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -27,7 +26,7 @@ public class GenBucketAdminCommand implements CommandExecutor {
     public final TabCompleter TAB_COMPLETER = (sender, cmd, alias, args) -> {
         if (args.length == 1) {
             List<String> arguments = new ArrayList<>(Arrays.asList("give", "reload", "bypass"));
-            for (String arg : Arrays.asList("give", "reload")) {
+            for (String arg : Arrays.asList("give", "reload", "bypass")) {
                 if (!arg.startsWith(args[0].toLowerCase())) {
                     arguments.remove(arg);
                 }
@@ -92,11 +91,12 @@ public class GenBucketAdminCommand implements CommandExecutor {
                                                 p.getWorld().dropItemNaturally(p.getLocation(), (ItemStack) excessItem);
                                             }
                                         }
-                                        if (!main.getConfigValues().getGiveMessage(p, giveAmount).equals("")) {
-                                            sender.sendMessage(main.getConfigValues().getGiveMessage(p, giveAmount));
+                                        double price = main.getConfigValues().getBucketShopPrice(bucket) * giveAmount;
+                                        if (!main.getConfigValues().getGiveMessage(p, giveAmount, bucket).equals("")) {
+                                            sender.sendMessage(main.getConfigValues().getGiveMessage(p, giveAmount, bucket));
                                         }
-                                        if (!main.getConfigValues().getReceiveMessage(giveAmount).equals("")) {
-                                            p.sendMessage(main.getConfigValues().getReceiveMessage(giveAmount));
+                                        if (!main.getConfigValues().getReceiveMessage(giveAmount, price, bucket).equals("")) {
+                                            p.sendMessage(main.getConfigValues().getReceiveMessage(giveAmount, price, bucket));
                                         }
                                     } else {
                                         sender.sendMessage(ChatColor.RED + "This bucket does not exist!");

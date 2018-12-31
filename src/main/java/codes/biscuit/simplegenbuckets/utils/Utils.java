@@ -7,10 +7,7 @@ import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemFlag;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.Recipe;
-import org.bukkit.inventory.ShapedRecipe;
+import org.bukkit.inventory.*;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -85,7 +82,7 @@ public class Utils {
                             continue;
                         }
                         if (data != 1) {
-                            newRecipe.setIngredient(ingredient.getKey(), mat, data);
+                            newRecipe.setIngredient(ingredient.getKey(), new ItemStack(mat, 1, data).getData());
                         } else {
                             newRecipe.setIngredient(ingredient.getKey(), mat);
                         }
