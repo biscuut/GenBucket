@@ -113,6 +113,24 @@ public class Utils {
         registerRecipes();
     }
 
+    public void updateConfig() {
+        if (main.getConfigValues().getConfigVersion() < 1.0) {
+            Map<String, Object> oldValues = new HashMap<>();
+            for (String oldKey : main.getConfig().getKeys(true)) {
+                oldValues.put(oldKey, main.getConfig().get(oldKey));
+            }
+            main.saveResource("config.yml", true);
+            main.reloadConfig();
+            for (String newKey : main.getConfig().getKeys(true)) {
+                if (oldValues.containsKey(newKey)) {
+                    main.getConfig().set(newKey, oldValues.get(newKey));
+                }
+            }
+            main.getConfig().set("config-version", 1.0);
+            main.saveConfig();
+        }
+    }
+
     public void checkUpdates(Player p) {
         new BukkitRunnable() {
             @Override
@@ -152,7 +170,7 @@ public class Utils {
                             if (newestVersionNumbers.get(i) > thisVersionNumbers.get(i)) {
                                 TextComponent newVersion = new TextComponent("A new version of "+main.getDescription().getName()+", " + newestVersion + " is available. Download it by clicking here.");
                                 newVersion.setColor(ChatColor.RED);
-                                newVersion.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "https://github.com/biscuut/"+main.getDescription().getName()+"/releases")); //TODO Change this to the spigot page when I post it.
+                                newVersion.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "https://www.spigotmc.org/resources/simplegenbuckets-1-8-1-13.63651/")); //TODO Change this to the spigot page when I post it.
                                 p.spigot().sendMessage(newVersion);
                             } else if (thisVersionNumbers.get(i) > newestVersionNumbers.get(i)) {
                                 p.sendMessage(ChatColor.RED + "You are running a development version of "+main.getDescription().getName()+", " + main.getDescription().getVersion() + ". The latest online version is " + newestVersion + ".");

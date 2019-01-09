@@ -430,7 +430,11 @@ public class ConfigValues {
 
     Set<String> getRecipeBuckets() {
         if (main.getConfig().getConfigurationSection("recipes") != null) {
-            return main.getConfig().getConfigurationSection("recipes").getKeys(false);
+            Set<String> bucketList = new HashSet<>();
+            for(String key : main.getConfig().getConfigurationSection("recipes").getKeys(false)) {
+                if (bucketExists(key)) bucketList.add(key);
+            }
+            return bucketList;
         } else {
             return null;
         }
@@ -486,5 +490,9 @@ public class ConfigValues {
         } else {
             return null;
         }
+    }
+
+    double getConfigVersion() {
+        return main.getConfig().getDouble("config-version");
     }
 }

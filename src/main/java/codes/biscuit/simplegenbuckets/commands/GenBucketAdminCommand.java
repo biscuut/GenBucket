@@ -4,9 +4,8 @@ import codes.biscuit.simplegenbuckets.SimpleGenBuckets;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.TabCompleter;
+import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -15,7 +14,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
-public class GenBucketAdminCommand implements CommandExecutor {
+public class GenBucketAdminCommand implements TabExecutor {
 
     private SimpleGenBuckets main;
 
@@ -23,7 +22,8 @@ public class GenBucketAdminCommand implements CommandExecutor {
         this.main = main;
     }
 
-    public final TabCompleter TAB_COMPLETER = (sender, cmd, alias, args) -> {
+    @Override
+    public List<String> onTabComplete(CommandSender sender, Command cmd, String alias, String[] args) {
         if (args.length == 1) {
             List<String> arguments = new ArrayList<>(Arrays.asList("give", "reload", "bypass"));
             for (String arg : Arrays.asList("give", "reload", "bypass")) {
@@ -32,7 +32,7 @@ public class GenBucketAdminCommand implements CommandExecutor {
                 }
             }
             return arguments;
-        } else if (args.length == 3) {
+        } else if (args.length == 3 && args[0].equalsIgnoreCase("give")) {
             List<String> arguments = new ArrayList<>(main.getConfigValues().getBucketList());
             for (String arg : main.getConfigValues().getBucketList()) {
                 if (!arg.startsWith(args[2].toLowerCase())) {
@@ -42,7 +42,7 @@ public class GenBucketAdminCommand implements CommandExecutor {
             return arguments;
         }
         return null;
-    };
+    }
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {

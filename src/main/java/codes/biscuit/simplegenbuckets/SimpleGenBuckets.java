@@ -21,12 +21,13 @@ public class SimpleGenBuckets  extends JavaPlugin {
         getCommand("genbucket").setExecutor(new GenBucketCommand(this));
         GenBucketAdminCommand gbaCommand = new GenBucketAdminCommand(this);
         getCommand("genbucketadmin").setExecutor(gbaCommand);
-        getCommand("genbucketadmin").setTabCompleter(gbaCommand.TAB_COMPLETER);
+        getCommand("genbucketadmin").setTabCompleter(gbaCommand);
         getConfig().options().copyDefaults(true);
         saveDefaultConfig();
         reloadConfig();
         hookUtils = new HookUtils(this);
         utils.registerRecipes();
+        utils.updateConfig();
     }
 
     public ConfigValues getConfigValues() {

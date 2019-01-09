@@ -8,10 +8,7 @@ import org.bukkit.WorldBorder;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 public class HookUtils {
 
@@ -23,7 +20,7 @@ public class HookUtils {
     private WorldGuardHook worldGuardHook;
     private CoreProtectHook coreProtectHook;
     private Economy economy;
-    private HashSet<UUID> bypassPlayers = new HashSet<>();
+    private Set<UUID> bypassPlayers = new HashSet<>();
 
     public HookUtils(SimpleGenBuckets main) {
         this.main = main;
@@ -192,7 +189,7 @@ public class HookUtils {
         }
     }
 
-    public HashSet<UUID> getBypassPlayers() {
+    public Set<UUID> getBypassPlayers() {
         return bypassPlayers;
     }
 
