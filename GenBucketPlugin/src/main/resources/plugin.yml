@@ -1,0 +1,30 @@
+main: codes.biscuit.genbucket.GenBucket
+name: GenBucket
+version: ${version}
+api-version: 1.13
+author: Biscut
+depend: [Vault]
+softdepend: [MassiveCore, CoreProtect, Factions, WorldGuard, WorldBorder]
+commands:
+  genbucket:
+    description: Opens the genbucket shop.
+    aliases: [gb, bucket, genbucketshop, bucketshop]
+  genbucketadmin:
+    description: The main command for admin/console bucket tools.
+    aliases: [gba]
+permissions:
+  genbucket.admin:
+    children:
+      genbucket.give: true
+      genbucket.reload: true
+      genbucket.bypass: true
+  genbucket.give:
+    default: op
+  genbucket.reload:
+    default: op
+  genbucket.bypass:
+    default: op
+  genbucket.shop:
+    default: true
+  genbucket.use:
+    default: true
