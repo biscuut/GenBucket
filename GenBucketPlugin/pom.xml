@@ -9,7 +9,7 @@
     <artifactId>GenBucketPlugin</artifactId>
     <packaging>jar</packaging>
     <name>GenBucketPlugin</name>
-    <version>1.0</version>
+    <version>1.0.1</version>
 
     <repositories>
         <repository>

@@ -9,6 +9,7 @@ import com.sk89q.worldguard.protection.flags.DefaultFlag;
 import com.sk89q.worldguard.protection.flags.StateFlag;
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
+import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 
@@ -27,5 +28,14 @@ public class WorldGuard_6 implements WorldGuardHook {
             if (set.queryState(localPlayer, DefaultFlag.BLOCK_BREAK) == StateFlag.State.DENY) return false; // If block break is set to deny
         }
         return true;
+    }
+
+    public boolean checkLocationBreakFlag(Location singleBlock, Player p) {
+        WorldGuardPlugin worldGuardPlugin = (WorldGuardPlugin) Bukkit.getServer().getPluginManager().getPlugin("WorldGuard");
+        RegionContainer container = worldGuardPlugin.getRegionContainer();
+        RegionQuery query = container.createQuery();
+        ApplicableRegionSet set = query.getApplicableRegions(singleBlock);
+        LocalPlayer localPlayer = worldGuardPlugin.wrapPlayer(p);
+        return set.queryState(localPlayer, DefaultFlag.BLOCK_BREAK) != StateFlag.State.DENY;
     }
 }

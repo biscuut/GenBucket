@@ -2,7 +2,7 @@ package codes.biscuit.genbucket;
 
 import codes.biscuit.genbucket.commands.GenBucketAdminCommand;
 import codes.biscuit.genbucket.commands.GenBucketCommand;
-import codes.biscuit.genbucket.events.PlayerEvents;
+import codes.biscuit.genbucket.listeners.PlayerListener;
 import codes.biscuit.genbucket.hooks.HookUtils;
 import codes.biscuit.genbucket.utils.ConfigValues;
 import codes.biscuit.genbucket.utils.Utils;
@@ -17,7 +17,7 @@ public class GenBucket extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        Bukkit.getPluginManager().registerEvents(new PlayerEvents(this), this);
+        Bukkit.getPluginManager().registerEvents(new PlayerListener(this), this);
         getCommand("genbucket").setExecutor(new GenBucketCommand(this));
         GenBucketAdminCommand gbaCommand = new GenBucketAdminCommand(this);
         getCommand("genbucketadmin").setExecutor(gbaCommand);

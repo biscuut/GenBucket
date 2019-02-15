@@ -16,7 +16,7 @@ public class ConfigValues {
         this.main = main;
     }
 
-    Map<String, Material> getBucketMaterialList() {
+    Map<String, Material> getBucketItemMaterials() {
         Map<String, Material> materials = new HashMap<>();
         for (String key : main.getConfig().getConfigurationSection("items").getKeys(false)) {
             try {
@@ -27,11 +27,11 @@ public class ConfigValues {
     }
 
     String getBucketItemName(String bucket) {
-        return ChatColor.translateAlternateColorCodes('&', main.getConfig().getString("items."+bucket+".item.name"));
+        return Utils.color(main.getConfig().getString("items."+bucket+".item.name"));
     }
 
     public Long getBlockSpeedDelay() {
-        double bps = main.getConfig().getDouble("blockspeed");
+        double bps = main.getConfig().getDouble("speed");
         if (bps<1) bps = 1;
         else if (bps>20) bps = 20;
         return Math.round(1 / bps * 20);
@@ -112,13 +112,13 @@ public class ConfigValues {
         List<String> uncolouredList = main.getConfig().getStringList("items."+bucket+".item.lore");
         List<String> colouredList = new ArrayList<>();
         for (String s : uncolouredList) {
-            colouredList.add(ChatColor.translateAlternateColorCodes('&', s));
+            colouredList.add(Utils.color(s));
         }
         return colouredList;
     }
 
     String getBucketName(String bucket) {
-        return ChatColor.translateAlternateColorCodes('&', main.getConfig().getString("items."+bucket+".item.name"));
+        return Utils.color(main.getConfig().getString("items."+bucket+".item.name"));
     }
 
     public boolean giveShouldDropItem() {
@@ -130,65 +130,69 @@ public class ConfigValues {
     }
 
     public String getGiveMessage(Player p, int amount, String bucket) {
-        return ChatColor.translateAlternateColorCodes('&', main.getConfig().getString("messages.give"))
+        return Utils.color(main.getConfig().getString("messages.give"))
                 .replace("{player}", p.getName()).replace("{amount}", String.valueOf(amount)).replace("{bucket}", bucket);
     }
 
     public String getReceiveMessage(int amount, double price, String bucket) {
-        return ChatColor.translateAlternateColorCodes('&', main.getConfig().getString("messages.receive"))
+        return Utils.color(main.getConfig().getString("messages.receive"))
                 .replace("{amount}", String.valueOf(amount)).replace("{price}", String.valueOf(price)).replace("{amount}", String.valueOf(amount)).replace("{bucket}", bucket);
     }
 
     public String getNoPermissionCommandMessage() {
-        return ChatColor.translateAlternateColorCodes('&', main.getConfig().getString("messages.no-permission-command"));
+        return Utils.color(main.getConfig().getString("messages.no-permission-command"));
     }
 
     public String getNoPermissionPlaceMessage() {
-        return ChatColor.translateAlternateColorCodes('&', main.getConfig().getString("messages.no-permission-place"));
+        return Utils.color(main.getConfig().getString("messages.no-permission-place"));
     }
 
     public String getNoFactionMessage() {
-        return ChatColor.translateAlternateColorCodes('&', main.getConfig().getString("messages.no-faction"));
+        return Utils.color(main.getConfig().getString("messages.no-faction"));
     }
 
     public String getOnlyClaimMessage() {
-        return ChatColor.translateAlternateColorCodes('&', main.getConfig().getString("messages.cannot-place-claim"));
+        return Utils.color(main.getConfig().getString("messages.cannot-place-claim"));
     }
 
-    public String getRegionProtectedMessage() {
-        return ChatColor.translateAlternateColorCodes('&', main.getConfig().getString("messages.region-protected"));
-    }
+//    public String getRegionProtectedMessage() {
+//        return Utils.color(main.getConfig().getString("messages.region-protected"));
+//    }
 
     public String getPlaceNormalMessage() {
-        return ChatColor.translateAlternateColorCodes('&', main.getConfig().getString("messages.place-message-regular"));
+        return Utils.color(main.getConfig().getString("messages.place-message-regular"));
     }
 
     public String getPlaceInfiniteMessage(double money) {
-        return ChatColor.translateAlternateColorCodes('&', main.getConfig().getString("messages.place-message-infinite").replace("{money}", String.valueOf(money)));
+        return Utils.color(main.getConfig().getString("messages.place-message-infinite").replace("{money}", String.valueOf(money)));
     }
 
     public String notEnoughMoneyPlaceMessage(double money) {
-        return ChatColor.translateAlternateColorCodes('&', main.getConfig().getString("messages.not-enough-money-place").replace("{cost}", String.valueOf(money)));
+        return Utils.color(main.getConfig().getString("messages.not-enough-money-place").replace("{cost}", String.valueOf(money)));
     }
 
     public String notEnoughMoneyBuyMessage(double money) {
-        return ChatColor.translateAlternateColorCodes('&', main.getConfig().getString("messages.not-enough-money-shop").replace("{cost}", String.valueOf(money)));
+        return Utils.color(main.getConfig().getString("messages.not-enough-money-shop").replace("{cost}", String.valueOf(money)));
     }
 
     public String getWrongDirectionMessage() {
-        return ChatColor.translateAlternateColorCodes('&', main.getConfig().getString("messages.wrong-direction"));
+        return Utils.color(main.getConfig().getString("messages.wrong-direction"));
     }
 
     public String getNoSpaceBuyMessage() {
-        return ChatColor.translateAlternateColorCodes('&', main.getConfig().getString("messages.not-enough-space-buy"));
+        return Utils.color(main.getConfig().getString("messages.not-enough-space-buy"));
     }
 
     public String getCannotPlaceYLevelMessage() {
-        return ChatColor.translateAlternateColorCodes('&', main.getConfig().getString("messages.cannot-place-y-level"));
+        return Utils.color(main.getConfig().getString("messages.cannot-place-y-level"));
     }
 
     public String getBuyConfirmationMessage(int amount) {
-        return ChatColor.translateAlternateColorCodes('&', main.getConfig().getString("messages.buy-success").replace("{amount}", String.valueOf(amount)));
+        return Utils.color(main.getConfig().getString("messages.buy-success").replace("{amount}", String.valueOf(amount)));
+    }
+
+    public String getNearbyPlayerMessage() {
+        return Utils.color(main.getConfig().getString("messages.cannot-place-nearby-players"));
     }
 
     public int getVerticalTravel() {
@@ -212,7 +216,7 @@ public class ConfigValues {
     }
 
     public double getBucketPlaceCost(String bucket) {
-        return main.getConfig().getDouble("items."+bucket+".infinite-place-price");
+        return main.getConfig().getDouble("items."+bucket+".place-price");
     }
 
     public boolean isFactionsHookEnabled() {
@@ -277,7 +281,7 @@ public class ConfigValues {
             try {
                 mat = Material.valueOf(materialSplit[0]);
             } catch (IllegalArgumentException ex) {
-                mat = Material.valueOf("BARRIER");
+                mat = Material.valueOf("AIR");
                 main.getLogger().severe("Your fill item material is invalid!");
             }
             short damage;
@@ -292,7 +296,7 @@ public class ConfigValues {
             try {
                 mat = Material.valueOf(rawMaterial);
             } catch (IllegalArgumentException ex) {
-                mat = Material.valueOf("BARRIER");
+                mat = Material.valueOf("AIR");
                 main.getLogger().severe("Your fill block material is invalid!");
             }
             return new ItemStack(mat, 1);
@@ -300,22 +304,22 @@ public class ConfigValues {
     }
 
     public String getGUITitle() {
-        return ChatColor.translateAlternateColorCodes('&', main.getConfig().getString("gui.title"));
+        return Utils.color(main.getConfig().getString("gui.title"));
     }
 
     public String getExitName() {
-        return ChatColor.translateAlternateColorCodes('&', main.getConfig().getString("gui.exit.name"));
+        return Utils.color(main.getConfig().getString("gui.exit.name"));
     }
 
     public String getFillName() {
-        return ChatColor.translateAlternateColorCodes('&', main.getConfig().getString("gui.fill.name"));
+        return Utils.color(main.getConfig().getString("gui.fill.name"));
     }
 
     public List<String> getExitLore() {
         List<String> uncolouredList = main.getConfig().getStringList("gui.exit.lore");
         List<String> colouredList = new ArrayList<>();
         for (String s : uncolouredList) {
-            colouredList.add(ChatColor.translateAlternateColorCodes('&', s));
+            colouredList.add(Utils.color(s));
         }
         return colouredList;
     }
@@ -324,7 +328,7 @@ public class ConfigValues {
         List<String> uncolouredList = main.getConfig().getStringList("gui.fill.lore");
         List<String> colouredList = new ArrayList<>();
         for (String s : uncolouredList) {
-            colouredList.add(ChatColor.translateAlternateColorCodes('&', s));
+            colouredList.add(Utils.color(s));
         }
         return colouredList;
     }
@@ -385,7 +389,7 @@ public class ConfigValues {
     }
 
     public String getBucketShopName(String bucket) {
-        return ChatColor.translateAlternateColorCodes('&', main.getConfig().getString("items."+bucket+".gui.name"));
+        return Utils.color(main.getConfig().getString("items."+bucket+".gui.name"));
     }
 
 
@@ -393,7 +397,7 @@ public class ConfigValues {
         List<String> uncolouredList = main.getConfig().getStringList("items."+bucket+".gui.lore");
         List<String> colouredList = new ArrayList<>();
         for (String s : uncolouredList) {
-            colouredList.add(ChatColor.translateAlternateColorCodes('&', s));
+            colouredList.add(Utils.color(s));
         }
         return colouredList;
     }
@@ -403,17 +407,17 @@ public class ConfigValues {
     }
 
     public String getBucketFromShopName(String name) {
-        name = ChatColor.translateAlternateColorCodes('&', name);
+        name = Utils.color(name);
         for (String bucket : getBucketList()) {
-            if (ChatColor.translateAlternateColorCodes('&', main.getConfig().getString("items."+bucket+".gui.name")).equals(name)) {
+            if (Utils.color(main.getConfig().getString("items."+bucket+".gui.name")).equals(name)) {
                 return bucket;
             }
         }
         return null;
     }
 
-    public double getBucketShopPrice(String bucket) {
-        return main.getConfig().getDouble("items."+bucket+".gui-price");
+    public double getBucketBuyPrice(String bucket) {
+        return main.getConfig().getDouble("items."+bucket+".buy-price");
     }
 
     public boolean showUpdateMessage() {
@@ -421,7 +425,7 @@ public class ConfigValues {
     }
 
     public int getMaxY() {
-        return main.getConfig().getInt("y-limit");
+        return main.getConfig().getInt("height-limit");
     }
 
     public int getMaxChunks() {
@@ -494,5 +498,13 @@ public class ConfigValues {
 
     double getConfigVersion() {
         return main.getConfig().getDouble("config-version");
+    }
+
+    public boolean bucketsDisappearDrop() {
+        return main.getConfig().getBoolean("infinite-buckets-disappear");
+    }
+
+    public int getPlayerCheckRadius() {
+        return main.getConfig().getInt("nearby-player-check-radius");
     }
 }

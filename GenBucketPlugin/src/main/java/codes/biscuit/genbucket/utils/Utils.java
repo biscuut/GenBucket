@@ -7,7 +7,10 @@ import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.*;
+import org.bukkit.inventory.ItemFlag;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.Recipe;
+import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -27,9 +30,17 @@ public class Utils {
         this.main = main;
     }
 
+    static String color(String text) {
+        return ChatColor.translateAlternateColorCodes('&', text);
+    }
+
+    /**
+     * @param item The itemstack to match
+     * @return Either the bucket name or null if none was found
+     */
     public String matchBucket(ItemStack item) {
-        if (main.getConfigValues().getBucketMaterialList().values().contains(item.getType()) && item.hasItemMeta() && item.getItemMeta().hasDisplayName()) {
-            Set<Map.Entry<String, Material>> materialList = main.getConfigValues().getBucketMaterialList().entrySet();
+        if (main.getConfigValues().getBucketItemMaterials().values().contains(item.getType()) && item.hasItemMeta() && item.getItemMeta().hasDisplayName()) {
+            Set<Map.Entry<String, Material>> materialList = main.getConfigValues().getBucketItemMaterials().entrySet();
             for (Map.Entry<String, Material> material : materialList) {
                 if (material.getValue().equals(item.getType())) {
                     if (main.getConfigValues().getBucketItemName(material.getKey()).equals(item.getItemMeta().getDisplayName())) {
@@ -114,7 +125,7 @@ public class Utils {
     }
 
     public void updateConfig() {
-        if (main.getConfigValues().getConfigVersion() < 1.0) {
+        if (main.getConfigValues().getConfigVersion() < 1.1) {
             Map<String, Object> oldValues = new HashMap<>();
             for (String oldKey : main.getConfig().getKeys(true)) {
                 oldValues.put(oldKey, main.getConfig().get(oldKey));
@@ -126,7 +137,7 @@ public class Utils {
                     main.getConfig().set(newKey, oldValues.get(newKey));
                 }
             }
-            main.getConfig().set("config-version", 1.0);
+            main.getConfig().set("config-version", 1.1);
             main.saveConfig();
         }
     }

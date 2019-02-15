@@ -1,6 +1,7 @@
 package codes.biscuit.genbucket.timers;
 
 import codes.biscuit.genbucket.GenBucket;
+import org.bukkit.Chunk;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -10,7 +11,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 public class GenningTimer extends BukkitRunnable {
 
     private Player p;
-    private Material genMaterial;
+    private Material genMaterial; //TODO all these could be turned into a single bucket class? worth it?
     private Block currentBlock;
     private GenBucket main;
     private BlockFace direction;
@@ -18,6 +19,7 @@ public class GenningTimer extends BukkitRunnable {
     private int blockCounter = 0;
     private int chunkCounter = 0;
     private boolean chunkLimited;
+    private Chunk previousChunk = null;
 
     public GenningTimer(Player p, Material genMaterial, Block startingBlock, BlockFace direction, GenBucket main, int limit, boolean chunkLimited) {
         this.p = p;
@@ -33,7 +35,14 @@ public class GenningTimer extends BukkitRunnable {
     @Override
     public void run() {
         if (blockCounter < limit && !(currentBlock.getY() > main.getConfigValues().getMaxY()) &&
-                main.getHookUtils().canBePlacedHere(p, currentBlock.getLocation(), true) && main.getConfigValues().getIgnoredBlockList().contains(currentBlock.getType())) {
+                main.getHookUtils().canGenBlock(p, currentBlock.getLocation()) && main.getConfigValues().getIgnoredBlockList().contains(currentBlock.getType())) {
+            if (previousChunk == null || !previousChunk.equals(currentBlock.getChunk())) { // Check every chunk only once for efficiency.
+                previousChunk = currentBlock.getChunk();
+                if (!main.getHookUtils().canGenChunk(p, currentBlock.getChunk())) {
+                    cancel();
+                    return;
+                }
+            }
             main.getHookUtils().logBlock(p, currentBlock.getLocation(), currentBlock.getType(), currentBlock.getData());
             currentBlock.setType(genMaterial);
             if (chunkLimited && currentBlock.getChunk() != currentBlock.getRelative(direction).getChunk()) {

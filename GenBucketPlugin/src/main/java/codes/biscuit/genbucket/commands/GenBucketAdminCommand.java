@@ -88,7 +88,7 @@ public class GenBucketAdminCommand implements TabExecutor {
                                                 p.getWorld().dropItemNaturally(p.getLocation(), (ItemStack) excessItem);
                                             }
                                         }
-                                        double price = main.getConfigValues().getBucketShopPrice(bucket) * giveAmount;
+                                        double price = main.getConfigValues().getBucketBuyPrice(bucket) * giveAmount;
                                         if (!main.getConfigValues().getGiveMessage(p, giveAmount, bucket).equals("")) {
                                             sender.sendMessage(main.getConfigValues().getGiveMessage(p, giveAmount, bucket));
                                         }
@@ -126,13 +126,14 @@ public class GenBucketAdminCommand implements TabExecutor {
                     break;
                 case "bypass":
                     if (sender instanceof Player) {
+                        Player p = (Player)sender;
                         if (sender.hasPermission("genbucket.bypass")) {
-                            if (main.getHookUtils().getBypassPlayers().contains(((Player)sender).getUniqueId())) {
+                            if (main.getHookUtils().getBypassPlayers().contains(p)) {
                                 sender.sendMessage(ChatColor.RED + "You can no longer place genbuckets anywhere infinitely.");
-                                main.getHookUtils().getBypassPlayers().remove(((Player)sender).getUniqueId());
+                                main.getHookUtils().getBypassPlayers().remove(p);
                             } else {
                                 sender.sendMessage(ChatColor.GREEN + "You can now place genbuckets anywhere infinitely.");
-                                main.getHookUtils().getBypassPlayers().add(((Player)sender).getUniqueId());
+                                main.getHookUtils().getBypassPlayers().add(p);
                             }
                         } else {
                             if (!main.getConfigValues().getNoPermissionCommandMessage().equals("")) {

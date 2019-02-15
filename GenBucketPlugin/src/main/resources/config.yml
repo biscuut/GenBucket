@@ -10,10 +10,10 @@
 ############################################################
 
 # How many blocks should be placed per second. (1-20)
-blockspeed: 2
+speed: 2
 
-# The max y-limit blocks can gen at.
-y-limit: 256
+# The max height blocks can gen at.
+height-limit: 256
 
 # How many blocks UPWARDS/OMNIDIRECTIONAL gens travel vertically.
 vertical-travel: 256
@@ -30,16 +30,22 @@ give-drop-item-if-full: true
 # Whether to drop items if a players inventory is full when buying from the shop. (false means it will show an error message instead)
 shop-drop-item-if-full: false
 
+# Make infinite genbuckets disappear when dropped. This is for convenience.
+infinite-buckets-disappear: true
+
+# Check for nearby players in this radius. Set to 0 to disable. Also compares faction relationships if applicable.
+nearby-player-check-radius: 0
+
 # Define your genbuckets here. This part may get a bit confusing with all the indents, its best to copy one of the examples
 # and then just edit it to your liking. Feel free to double check your formatting @ http://yaml-online-parser.appspot.com/.
 items:
-  omnidirectional_cobble: # The name of the bucket, can be anything. No spaces!
+  omnidirectional_cobble: # The name of the bucket, can be anything. No spaces! This will be used to get the item ingame.
     item:
       name: '&7Omnidirectional Cobble Bucket' # The item name when in the player's inventory.
       material: 'COBBLESTONE'  # The item material when in the player's inventory. Feel free to use data/damage values.
       lore:
         - '&7This magical block creates cobblestone' # The item lore when in the player's inventory.
-        - '&7from the ground to the sky when placed!'
+        - '&7in any direction when placed!'
       glow: true # Whether the item in the player's inventory should glow.
     block:
       material: 'COBBLESTONE' # The block that will gen when this bucket is placed.
@@ -61,10 +67,9 @@ items:
       - '&eShift-click&7 to buy 16! (&e$3200)'
       glow: true # Whether the item in the gui should glow.
       slot: 11 # The slot this item will appear in the shop GUI. To count the slot number, count from left-right-up-down, and subtract 1.
-    gui-price: 200 # The cost of this item to buy this item from the GUI.
+    buy-price: 200 # The cost of this item to buy this item from the GUI.
     infinite: false # Whether the gen has unlimited places, but will instead charge to place. (also known as printer mode genbuckets)
-    infinite-place-price: 100.5 # How much to charge the player per placement if infinite (above) is set to true.
-
+    place-price: 0 # How much to charge the player per placement if infinite (above) is set to true.
   horizontal_obby: # Bucket two, follows the same format as above. Feel free to copy and paste the example bucket and just change the values.
     item:
       name: '&7Horizontal Obsidian Bucket'
@@ -82,34 +87,33 @@ items:
       lore:
         - '&7Buy a magical block that creates obsidian'
         - '&7sideways when placed!'
-        - '&7COST: &e$200'
-        - '&eShift-click&7 to buy 16! (&e$3200)'
+        - '&7COST: &e$1000'
+        - '&eShift-click&7 to buy 16! (&e$16000)'
       glow: true
-      slot: 11
-    gui-price: 1000
+      slot: 14
+    buy-price: 1000
     infinite: false
-    infinite-place-price: 500
+    place-price: 0
 
 # All the settings for the shop GUI.
 gui:
   enabled: true # Whether the GUI shop is enabled. You can disable this for example if you'd like to make your own shop in ShopGUI with commands.
   title: '&7GENBUCKET SHOP' # The title of the shop GUI inventory.
   rows: 3 # How big the inventory will be (in rows).
-  bulk-buy-amount: 16 # How many buckets will a player be able to buy when holding down shift? (also known as bulk buying)
-  exit: # The exit button in the shop GUI.
+  bulk-buy-amount: 16 # How many buckets will a player be able to buy when they shift and click? (bulk buy)
+  exit: # Customize the exit button in the shop GUI.
     item: 'BARRIER'
     name: '&cExit the shop!'
     lore: []
     slots: # What slots the exit button will appear on.
       - 26
     glow: true
-  fill:
+  fill: # This will automatically fill all the empty slots in the GUI.
     item: 'STAINED_GLASS_PANE:7'
     name: ''
     lore:
       - ''
     glow: false
-
 
 # Which blocks will be ignored by the genbucket.
 ignored-blocks:
@@ -125,7 +129,7 @@ ignored-blocks:
 #  - 'STATIONARY_LAVA'
 #  - 'STATIONARY_WATER'
 
-# Define custom recipes for your buckets here.
+# Define custom recipes for your buckets here. Read the comments carefully to learn how they work.
 recipes:
   omnidirectional_cobble: # Specify the bucket name here.
     symbols: # Specify symbols to represent items (makes your life easier). The symbol can be any single-letter character. Don't list symbols that you don't use in recipe:.
@@ -165,7 +169,6 @@ messages:
   no-permission-place: '&cYou cannot place genbuckets!' # Message when someone does not have the permission to place gen buckets.
   no-faction: '&cYou must have a faction to use a genbucket!' # Message when someone tries to place a gen bucket without a faction when requires-faction: true.
   cannot-place-claim: '&cYou can only place genbuckets in your territory/wilderness!' # Message when someone tries to place a gen bucket in someone else's territory or in the wilderness when can-place-wilderness: false
-  region-protected: '&cYou cannot place genbuckets in this area!' # Message when someone tries to place a gen bucket in a WorldGuard/WorldBorder protected region.
   place-message-regular: '' # Message when someone places a gen bucket.
   place-message-infinite: '&c{money} has been taken to place this genbucket.' # Message when someone places an infinite (aka printer) gen bucket.
   not-enough-money-place: '&cYou cannot afford to place this bucket. It costs ${cost}!' # Message when someone can't afford to place an infinite gen bucket.
@@ -173,10 +176,11 @@ messages:
   wrong-direction: '&cThis bucket cannot be placed in this direction.' # Message when someone tries to place a horizontal gen bucket against the top or bottom of a block.
   not-enough-space-buy: '&cYou do not have enough space in your inventory!' # Message when a player's inventory is full and they try to buy a gen bucket when shop-drop-item-if-full: false.
   buy-success: '&aYou bought {amount} genbucket(s)!' # Message when someone successfully buys a gen bucket.
-  cannot-place-y-level: '&cYou cannot place gens at this y-level!' # Message when someone places a gen bucket above the y-limit:.
+  cannot-place-y-level: '&cYou cannot place gens at this y-level!' # Message when someone places a gen bucket above the height-limit.
+  cannot-place-nearby-players: '&cYou cannot place gens when enemies are nearby!' # Message when someone places a gen bucket with enemies near.
 
 # Whether to show a message when there is a new version available. Keep this true to stay on top of bug fixes and new features.
 show-update-messages: true
 
 # Please do not change.
-config-version: 1.0
+config-version: 1.1
