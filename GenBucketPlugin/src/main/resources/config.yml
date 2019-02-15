@@ -169,7 +169,7 @@ messages:
   no-permission-place: '&cYou cannot place genbuckets!' # Message when someone does not have the permission to place gen buckets.
   no-faction: '&cYou must have a faction to use a genbucket!' # Message when someone tries to place a gen bucket without a faction when requires-faction: true.
   cannot-place-claim: '&cYou can only place genbuckets in your territory/wilderness!' # Message when someone tries to place a gen bucket in someone else's territory or in the wilderness when can-place-wilderness: false
-  place-message-regular: '' # Message when someone places a gen bucket.
+  place-message-regular: '&c{money} has been taken to place this genbucket.' # Message when someone places a gen bucket.
   place-message-infinite: '&c{money} has been taken to place this genbucket.' # Message when someone places an infinite (aka printer) gen bucket.
   not-enough-money-place: '&cYou cannot afford to place this bucket. It costs ${cost}!' # Message when someone can't afford to place an infinite gen bucket.
   not-enough-money-shop: '&cYou cannot afford to buy this bucket. It costs ${cost}!' # Message when someone can't afford to buy a gen bucket.

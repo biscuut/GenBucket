@@ -71,6 +71,20 @@ public class HookUtils {
                 onlyClaim(p);
                 return false;
             }
+        } else if (enabledHooks.containsKey(Hooks.FACTIONSUUID)) {
+            FactionsUUIDHook factionsUUIDHook = (FactionsUUIDHook) enabledHooks.get(Hooks.FACTIONSUUID);
+            if (main.getConfigValues().needsFaction() && !factionsUUIDHook.hasFaction(p)) {
+                cannotPlaceNoFaction(p);
+                return false;
+            }
+            if (factionsUUIDHook.isNotWilderness(loc) && !factionsUUIDHook.locationIsFactionClaim(loc, p)) {
+                onlyClaim(p);
+                return false;
+            }
+            if (main.getConfigValues().cantPlaceWilderness() && !factionsUUIDHook.isNotWilderness(loc)) {
+                onlyClaim(p);
+                return false;
+            }
         }
         return true;
     }

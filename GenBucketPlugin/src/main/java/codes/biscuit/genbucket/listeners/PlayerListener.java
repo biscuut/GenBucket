@@ -110,14 +110,16 @@ public class PlayerListener implements Listener {
             }
             new GenningTimer(p, main.getConfigValues().getBucketBlockMaterial(bucket), block,
                     direction, main, limit, chunkLimited).runTaskTimer(main, 0L, main.getConfigValues().getBlockSpeedDelay());
-            if (main.getConfigValues().isNotInfinite(bucket) && !main.getHookUtils().getBypassPlayers().contains(p)) {
-                if (removeItem.getAmount() == 1) {
-                    removeItem.setType(Material.AIR);
-                } else {
-                    removeItem.setAmount(removeItem.getAmount()-1);
+            if (main.getConfigValues().isNotInfinite(bucket)) {
+                if (!main.getHookUtils().getBypassPlayers().contains(p)) {
+                    if (removeItem.getAmount() == 1) {
+                        removeItem.setType(Material.AIR);
+                    } else {
+                        removeItem.setAmount(removeItem.getAmount() - 1);
+                    }
                 }
-                if (!main.getConfigValues().getPlaceNormalMessage().equals("")) {
-                    p.sendMessage(main.getConfigValues().getPlaceNormalMessage());
+                if (!main.getConfigValues().getPlaceNormalMessage(main.getConfigValues().getBucketPlaceCost(bucket)).equals("")) {
+                    p.sendMessage(main.getConfigValues().getPlaceNormalMessage(main.getConfigValues().getBucketPlaceCost(bucket)));
                 }
             } else {
                 if (!main.getConfigValues().getPlaceInfiniteMessage(main.getConfigValues().getBucketPlaceCost(bucket)).equals("")) {

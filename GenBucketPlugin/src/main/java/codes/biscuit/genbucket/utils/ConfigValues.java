@@ -159,8 +159,8 @@ public class ConfigValues {
 //        return Utils.color(main.getConfig().getString("messages.region-protected"));
 //    }
 
-    public String getPlaceNormalMessage() {
-        return Utils.color(main.getConfig().getString("messages.place-message-regular"));
+    public String getPlaceNormalMessage(double money) {
+        return Utils.color(main.getConfig().getString("messages.place-message-regular").replace("{money}", String.valueOf(money)));
     }
 
     public String getPlaceInfiniteMessage(double money) {
