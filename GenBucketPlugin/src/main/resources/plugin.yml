@@ -8,7 +8,7 @@ softdepend: [MassiveCore, CoreProtect, Factions, WorldGuard, WorldBorder]
 commands:
   genbucket:
     description: Opens the genbucket shop.
-    aliases: [gb, bucket, genbucketshop, bucketshop]
+    aliases: [gb, gen, bucket, genbucketshop, bucketshop]
   genbucketadmin:
     description: The main command for admin/console bucket tools.
     aliases: [gba]

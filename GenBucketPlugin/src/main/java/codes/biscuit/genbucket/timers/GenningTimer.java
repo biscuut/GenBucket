@@ -35,7 +35,7 @@ public class GenningTimer extends BukkitRunnable {
     @Override
     public void run() {
         if (blockCounter < limit && !(currentBlock.getY() > main.getConfigValues().getMaxY()) &&
-                main.getHookUtils().canGenBlock(p, currentBlock.getLocation()) && main.getConfigValues().getIgnoredBlockList().contains(currentBlock.getType())) {
+                main.getHookUtils().canGenBlock(p, currentBlock.getLocation(), direction != BlockFace.UP && direction != BlockFace.DOWN) && main.getConfigValues().getIgnoredBlockList().contains(currentBlock.getType())) {
             if (previousChunk == null || !previousChunk.equals(currentBlock.getChunk())) { // Check every chunk only once for efficiency.
                 previousChunk = currentBlock.getChunk();
                 if (!main.getHookUtils().canGenChunk(p, currentBlock.getChunk())) {

@@ -99,24 +99,27 @@ public class HookUtils {
         return true;
     }
 
-    public boolean canGenBlock(Player p, Location block) {
+    public boolean canGenBlock(Player p, Location block, boolean horizontal) {
         if (enabledHooks.containsKey(Hooks.WORLDGUARD)) {
             WorldGuardHook worldGuardHook = (WorldGuardHook)enabledHooks.get(Hooks.WORLDGUARD);
-            if (worldGuardHook.checkLocationBreakFlag(block, p)) {
+            if (!worldGuardHook.canBreakBlock(block, p)) {
                 return false;
             }
         }
-        if (enabledHooks.containsKey(Hooks.WORLDBORDER)) {
-            WorldBorderHook worldBorderHook = (WorldBorderHook)enabledHooks.get(Hooks.WORLDBORDER);
-            if (!worldBorderHook.isInsideBorder(block)) {
-                return false;
+        if (horizontal) {
+            if (enabledHooks.containsKey(Hooks.WORLDBORDER)) {
+                WorldBorderHook worldBorderHook = (WorldBorderHook) enabledHooks.get(Hooks.WORLDBORDER);
+                if (!worldBorderHook.isInsideBorder(block)) {
+                    return false;
+                }
             }
+            WorldBorder border = p.getWorld().getWorldBorder();
+            double radius = border.getSize() / 2;
+            Location center = border.getCenter();
+            double x = block.getX() - center.getX(), z = block.getZ() - center.getZ();
+            return !(x >= radius || -x > radius) || (z >= radius || -z > radius);
         }
-        WorldBorder border = p.getWorld().getWorldBorder();
-        double radius = border.getSize()/2;
-        Location center = border.getCenter();
-        double x = block.getX() - center.getX(), z = block.getZ() - center.getZ();
-        return !(x >= radius || -x > radius) || (z >= radius || -z > radius);
+        return true;
     }
 
     private void cannotPlaceNoFaction(Player p) {
