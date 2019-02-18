@@ -116,8 +116,8 @@ public class PlayerListener implements Listener {
             main.getUtils().getCurrentGens().put(block.getLocation(), genningTimer);
             if (main.getConfigValues().isNotInfinite(bucket)) {
                 if (!main.getHookUtils().getBypassPlayers().contains(p)) {
-                    if (removeItem.getAmount() == 1) {
-                        removeItem.setType(Material.AIR);
+                    if (removeItem.getAmount() <= 1) {
+                        p.setItemInHand(null);
                     } else {
                         removeItem.setAmount(removeItem.getAmount() - 1);
                     }
