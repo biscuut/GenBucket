@@ -39,6 +39,9 @@ player-check-radius: 0.0
 # Check for sponges in this radius and stop the genbucket if they are found. Set to 0 to disable.
 sponge-check-radius: 0.0
 
+# Allows you to punch/break a fake wool block at the base of the genbucket to cancel it.
+enable-cancelling: true
+
 # Define your genbuckets here. This part may get a bit confusing with all the indents, its best to copy one of the examples
 # and then just edit it to your liking. Feel free to double check your formatting @ http://yaml-online-parser.appspot.com/.
 items:

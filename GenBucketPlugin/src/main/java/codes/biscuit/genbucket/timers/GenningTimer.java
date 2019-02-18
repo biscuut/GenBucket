@@ -52,16 +52,20 @@ public class GenningTimer extends BukkitRunnable {
                 if (chunkCounter >= main.getConfigValues().getMaxChunks()) cancel();
             }
             currentBlock = currentBlock.getRelative(direction);
-            Material wool;
-            try {
-                wool = Material.valueOf("WOOL");
-            } catch (IllegalArgumentException ex) {
-                wool = Material.valueOf("LIME_WOOL"); // For 1.13
+            if (main.getConfigValues().cancellingEnabled()) {
+                Material wool;
+                try {
+                    wool = Material.valueOf("WOOL");
+                } catch (IllegalArgumentException ex) {
+                    wool = Material.valueOf("LIME_WOOL"); // For 1.13
+                }
+                p.sendBlockChange(startingBlock.getLocation(), wool, (byte) 5);
             }
-            p.sendBlockChange(startingBlock.getLocation(), wool, (byte)5);
         } else {
-            main.getUtils().getCurrentGens().remove(startingBlock.getLocation());
-            p.sendBlockChange(startingBlock.getLocation(), genMaterial, (byte)0);
+            if (main.getConfigValues().cancellingEnabled()) {
+                main.getUtils().getCurrentGens().remove(startingBlock.getLocation());
+                p.sendBlockChange(startingBlock.getLocation(), startingBlock.getType(), startingBlock.getData());
+            }
             cancel();
         }
         blockCounter++;

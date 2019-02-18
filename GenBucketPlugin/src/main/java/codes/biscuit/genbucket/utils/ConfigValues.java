@@ -511,4 +511,8 @@ public class ConfigValues {
     public double getSpongeCheckRadius() {
         return main.getConfig().getDouble("sponge-check-radius");
     }
+
+    public boolean cancellingEnabled() {
+        return main.getConfig().getBoolean("enable-cancelling");
+    }
 }

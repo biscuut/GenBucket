@@ -113,7 +113,9 @@ public class PlayerListener implements Listener {
             }
             GenningTimer genningTimer = new GenningTimer(p, main.getConfigValues().getBucketBlockMaterial(bucket), block, direction, main, limit, chunkLimited);
             genningTimer.runTaskTimer(main, 0L, main.getConfigValues().getBlockSpeedDelay());
-            main.getUtils().getCurrentGens().put(block.getLocation(), genningTimer);
+            if (main.getConfigValues().cancellingEnabled()) {
+                main.getUtils().getCurrentGens().put(block.getLocation(), genningTimer);
+            }
             if (main.getConfigValues().isNotInfinite(bucket)) {
                 if (!main.getHookUtils().getBypassPlayers().contains(p)) {
                     if (removeItem.getAmount() <= 1) {
@@ -191,19 +193,23 @@ public class PlayerListener implements Listener {
 
     @EventHandler
     public void onBlockDamage(BlockDamageEvent e) {
-        Location b = e.getBlock().getLocation();
-        if (main.getUtils().getCurrentGens().containsKey(b)) {
-            main.getUtils().getCurrentGens().get(b).cancel();
-            main.getUtils().getCurrentGens().remove(b);
+        if (main.getConfigValues().cancellingEnabled()) {
+            Location b = e.getBlock().getLocation();
+            if (main.getUtils().getCurrentGens().containsKey(b)) {
+                main.getUtils().getCurrentGens().get(b).cancel();
+                main.getUtils().getCurrentGens().remove(b);
+            }
         }
     }
 
     @EventHandler
     public void onBlockBreak(BlockBreakEvent e) {
-        Location b = e.getBlock().getLocation();
-        if (main.getUtils().getCurrentGens().containsKey(b)) {
-            main.getUtils().getCurrentGens().get(b).cancel();
-            main.getUtils().getCurrentGens().remove(b);
+        if (main.getConfigValues().cancellingEnabled()) {
+            Location b = e.getBlock().getLocation();
+            if (main.getUtils().getCurrentGens().containsKey(b)) {
+                main.getUtils().getCurrentGens().get(b).cancel();
+                main.getUtils().getCurrentGens().remove(b);
+            }
         }
     }
 }
