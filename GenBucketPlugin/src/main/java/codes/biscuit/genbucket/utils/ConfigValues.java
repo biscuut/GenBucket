@@ -504,7 +504,11 @@ public class ConfigValues {
         return main.getConfig().getBoolean("infinite-buckets-disappear");
     }
 
-    public int getPlayerCheckRadius() {
-        return main.getConfig().getInt("nearby-player-check-radius");
+    public double getPlayerCheckRadius() {
+        return main.getConfig().getDouble("player-check-radius");
+    }
+
+    public double getSpongeCheckRadius() {
+        return main.getConfig().getDouble("sponge-check-radius");
     }
 }

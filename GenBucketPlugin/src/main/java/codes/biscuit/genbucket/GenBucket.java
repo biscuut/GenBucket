@@ -22,7 +22,7 @@ public class GenBucket extends JavaPlugin {
         GenBucketAdminCommand gbaCommand = new GenBucketAdminCommand(this);
         getCommand("genbucketadmin").setExecutor(gbaCommand);
         getCommand("genbucketadmin").setTabCompleter(gbaCommand);
-        getConfig().options().copyDefaults(true);
+//        getConfig().options().copyDefaults(true);
         saveDefaultConfig();
         reloadConfig();
         hookUtils = new HookUtils(this);

@@ -1,9 +1,11 @@
 package codes.biscuit.genbucket.utils;
 
 import codes.biscuit.genbucket.GenBucket;
+import codes.biscuit.genbucket.timers.GenningTimer;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.TextComponent;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
@@ -25,6 +27,7 @@ public class Utils {
 
     private GenBucket main;
     private List<Recipe> recipeList = new ArrayList<>();
+    private Map<Location, GenningTimer> currentGens = new HashMap<>();
 
     public Utils(GenBucket main) {
         this.main = main;
@@ -182,5 +185,9 @@ public class Utils {
                 } catch (Exception ignored) {}
             }
         }.runTask(main);
+    }
+
+    public Map<Location, GenningTimer> getCurrentGens() {
+        return currentGens;
     }
 }

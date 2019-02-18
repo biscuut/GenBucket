@@ -2,6 +2,7 @@ package codes.biscuit.genbucket.listeners;
 
 import codes.biscuit.genbucket.GenBucket;
 import codes.biscuit.genbucket.timers.GenningTimer;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -11,6 +12,8 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockDamageEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -57,7 +60,7 @@ public class PlayerListener implements Listener {
     }
 
     private boolean noPlayersNearby(Player p) {
-        int radius = main.getConfigValues().getPlayerCheckRadius();
+        double radius = main.getConfigValues().getPlayerCheckRadius();
         if (radius != 0) {
             for (Entity entity : p.getNearbyEntities(radius, radius, radius)) {
                 if (entity instanceof Player) {
@@ -85,7 +88,7 @@ public class PlayerListener implements Listener {
 
     private void startGenBucket(String bucket, Player p, Block block, BlockFace direction, ItemStack removeItem) {
         if (main.getHookUtils().canPlaceHere(p, block.getLocation()) && noPlayersNearby(p) && main.getHookUtils().takeBucketPlaceCost(p, bucket)) {
-            if ((main.getConfigValues().getBucketDirection(bucket).equals("HORIZONTAL") || main.getConfigValues().getBucketDirection(bucket).equals("HORIZONTAL_CHUNK")) &&
+            if ((main.getConfigValues().getBucketDirection(bucket).equals("HORIZONTAL") || main.getConfigValues().getBucketDirection(bucket).equals("HORIZONTAL_BY_CHUNK")) &&
                     (direction.equals(BlockFace.UP) || direction.equals(BlockFace.DOWN))) {
                 if (!main.getConfigValues().getWrongDirectionMessage().equals("")) {
                     p.sendMessage(main.getConfigValues().getWrongDirectionMessage());
@@ -100,7 +103,7 @@ public class PlayerListener implements Listener {
                 case "DOWNWARDS":
                     direction = BlockFace.DOWN;
                     break;
-                case "HORIZONTAL_CHUNK": case "OMNIDIRECTIONAL_CHUNK":
+                case "HORIZONTAL_BY_CHUNK": case "ANY_BY_CHUNK":
                     chunkLimited = true;
                     break;
             }
@@ -108,8 +111,9 @@ public class PlayerListener implements Listener {
             if (direction != BlockFace.UP && direction != BlockFace.DOWN) {
                 limit = main.getConfigValues().getHorizontalTravel();
             }
-            new GenningTimer(p, main.getConfigValues().getBucketBlockMaterial(bucket), block,
-                    direction, main, limit, chunkLimited).runTaskTimer(main, 0L, main.getConfigValues().getBlockSpeedDelay());
+            GenningTimer genningTimer = new GenningTimer(p, main.getConfigValues().getBucketBlockMaterial(bucket), block, direction, main, limit, chunkLimited);
+            genningTimer.runTaskTimer(main, 0L, main.getConfigValues().getBlockSpeedDelay());
+            main.getUtils().getCurrentGens().put(block.getLocation(), genningTimer);
             if (main.getConfigValues().isNotInfinite(bucket)) {
                 if (!main.getHookUtils().getBypassPlayers().contains(p)) {
                     if (removeItem.getAmount() == 1) {
@@ -118,11 +122,11 @@ public class PlayerListener implements Listener {
                         removeItem.setAmount(removeItem.getAmount() - 1);
                     }
                 }
-                if (!main.getConfigValues().getPlaceNormalMessage(main.getConfigValues().getBucketPlaceCost(bucket)).equals("")) {
+                if (!main.getConfigValues().getPlaceNormalMessage(main.getConfigValues().getBucketPlaceCost(bucket)).equals("") && main.getConfigValues().getBucketPlaceCost(bucket) > 0) {
                     p.sendMessage(main.getConfigValues().getPlaceNormalMessage(main.getConfigValues().getBucketPlaceCost(bucket)));
                 }
             } else {
-                if (!main.getConfigValues().getPlaceInfiniteMessage(main.getConfigValues().getBucketPlaceCost(bucket)).equals("")) {
+                if (!main.getConfigValues().getPlaceInfiniteMessage(main.getConfigValues().getBucketPlaceCost(bucket)).equals("") && main.getConfigValues().getBucketPlaceCost(bucket) > 0) {
                     p.sendMessage(main.getConfigValues().getPlaceInfiniteMessage(main.getConfigValues().getBucketPlaceCost(bucket)));
                 }
             }
@@ -182,6 +186,24 @@ public class PlayerListener implements Listener {
     public void onJoin(PlayerJoinEvent e) {
         if (main.getConfigValues().showUpdateMessage() && e.getPlayer().isOp()) {
             main.getUtils().checkUpdates(e.getPlayer());
+        }
+    }
+
+    @EventHandler
+    public void onBlockDamage(BlockDamageEvent e) {
+        Location b = e.getBlock().getLocation();
+        if (main.getUtils().getCurrentGens().containsKey(b)) {
+            main.getUtils().getCurrentGens().get(b).cancel();
+            main.getUtils().getCurrentGens().remove(b);
+        }
+    }
+
+    @EventHandler
+    public void onBlockBreak(BlockBreakEvent e) {
+        Location b = e.getBlock().getLocation();
+        if (main.getUtils().getCurrentGens().containsKey(b)) {
+            main.getUtils().getCurrentGens().get(b).cancel();
+            main.getUtils().getCurrentGens().remove(b);
         }
     }
 }

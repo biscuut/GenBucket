@@ -3,6 +3,7 @@ package codes.biscuit.genbucket.hooks;
 import codes.biscuit.genbucket.GenBucket;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.*;
+import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 
@@ -120,6 +121,19 @@ public class HookUtils {
                 return false;
             }
         }
+        if (main.getConfigValues().getSpongeCheckRadius() > 0) {
+            double radius = main.getConfigValues().getSpongeCheckRadius();
+            for (double x = block.getX() - radius; x < block.getX() + radius; x++) {
+                for (double y = block.getY() - radius; y < block.getY() + radius; y++) {
+                    for (double z = block.getZ() - radius; z < block.getZ() + radius; z++) {
+                        Block b = new Location(block.getWorld(), x, y, z).getBlock();
+                        if (!b.getLocation().equals(block) && b.getType() == Material.SPONGE) {
+                            return false;
+                        }
+                    }
+                }
+            }
+        }
         if (horizontal) {
             if (enabledHooks.containsKey(Hooks.WORLDBORDER)) {
                 WorldBorderHook worldBorderHook = (WorldBorderHook) enabledHooks.get(Hooks.WORLDBORDER);
@@ -204,7 +218,7 @@ public class HookUtils {
             FactionsUUIDHook factionsUUIDHook = (FactionsUUIDHook) enabledHooks.get(Hooks.FACTIONSUUID);
             return factionsUUIDHook.isFriendlyPlayer(p, p2);
         } else {
-            return true;
+            return false; // Should the default be true or false? Idk what would work best.
         }
     }
 

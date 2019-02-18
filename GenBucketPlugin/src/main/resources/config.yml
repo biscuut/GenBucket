@@ -15,13 +15,13 @@ speed: 2
 # The max height blocks can gen at.
 height-limit: 256
 
-# How many blocks UPWARDS/OMNIDIRECTIONAL gens travel vertically.
+# How many blocks UPWARDS/ANY gens travel vertically.
 vertical-travel: 256
 
-# How many blocks HORIZONTAL/OMNIDIRECTIONAL gen travel horizontally.
+# How many blocks HORIZONTAL/ANY gen travel horizontally.
 horizontal-travel: 32
 
-# How many chunks HORIZONTAL_CHUNK/OMNIDIRECTIONAL_CHUNK gens travel horizontally.
+# How many chunks HORIZONTAL_BY_CHUNK/ANY_BY_CHUNK gens travel horizontally.
 chunk-travel: 1
 
 # Whether to drop items if a players inventory is full when doing the /gba give command. (false means it will show an error message instead)
@@ -34,14 +34,17 @@ shop-drop-item-if-full: false
 infinite-buckets-disappear: true
 
 # Check for nearby players in this radius. Set to 0 to disable. Also compares faction relationships if applicable.
-nearby-player-check-radius: 0
+player-check-radius: 0.0
+
+# Check for sponges in this radius and stop the genbucket if they are found. Set to 0 to disable.
+sponge-check-radius: 0.0
 
 # Define your genbuckets here. This part may get a bit confusing with all the indents, its best to copy one of the examples
 # and then just edit it to your liking. Feel free to double check your formatting @ http://yaml-online-parser.appspot.com/.
 items:
   omnidirectional_cobble: # The name of the bucket, can be anything. No spaces! This will be used to get the item ingame.
     item:
-      name: '&7Omnidirectional Cobble Bucket' # The item name when in the player's inventory.
+      name: '&7Any Direction Cobble Bucket' # The item name when in the player's inventory.
       material: 'COBBLESTONE'  # The item material when in the player's inventory. Feel free to use data/damage values.
       lore:
         - '&7This magical block creates cobblestone' # The item lore when in the player's inventory.
@@ -50,15 +53,15 @@ items:
     block:
       material: 'COBBLESTONE' # The block that will gen when this bucket is placed.
       # The direction of this bucket, can be one of these 4:
+      # 'UPWARDS' - Will gen up from the block it's placed on
       # 'DOWNWARDS' - Will gen down from the block it's placed on. (TIP: Do not use for blocks with gravity like sand/gravel)
       # 'HORIZONTAL' - Will gen sideways from the block it's placed on. The direction depends on what the bucket was placed against.
-      # 'HORIZONTAL_CHUNK' - Will gen sideways from the block it's placed on. The direction depends on what the bucket was placed against.
-      # 'UPWARDS' - Will gen up from the block it's placed on
-      # 'OMNIDIRECTIONAL' - Can gen upwards, downwards, or horizontally. The direction depends on what the bucket was placed against.
-      # 'OMNIDIRECTIONAL_CHUNK' - Can gen upwards, downwards, or horizontally by chunk. The direction depends on what the bucket was placed against.
-      direction: 'OMNIDIRECTIONAL'
+      # 'HORIZONTAL_BY_CHUNK' - Will gen sideways from the block it's placed on. The direction depends on what the bucket was placed against.
+      # 'ANY' - Can gen upwards, downwards, or horizontally. The direction depends on what the bucket was placed against.
+      # 'ANY_BY_CHUNK' - Can gen upwards, downwards, or horizontally by chunk. The direction depends on what the bucket was placed against.
+      direction: 'ANY'
     gui:
-      name: '&7Omnidirectional Cobble Bucket (BUY)' # The item name shown in the shop gui.
+      name: '&7Any Direction Cobble Bucket (BUY)' # The item name shown in the shop gui.
       material: 'COBBLESTONE' # The material name shown in the shop gui.
       lore:
       - '&7Buy a magical block that creates cobblestone' # The item lore shown in the shop gui.
