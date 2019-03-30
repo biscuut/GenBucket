@@ -37,36 +37,50 @@ public class Utils {
         return ChatColor.translateAlternateColorCodes('&', text);
     }
 
-    /**
-     * @param item The itemstack to match
-     * @return Either the bucket name or null if none was found
-     */
-    public String matchBucket(ItemStack item) {
-        if (main.getConfigValues().getBucketItemMaterials().values().contains(item.getType()) && item.hasItemMeta() && item.getItemMeta().hasDisplayName()) {
-            Set<Map.Entry<String, Material>> materialList = main.getConfigValues().getBucketItemMaterials().entrySet();
-            for (Map.Entry<String, Material> material : materialList) {
-                if (material.getValue().equals(item.getType())) {
-                    if (main.getConfigValues().getBucketItemName(material.getKey()).equals(item.getItemMeta().getDisplayName())) {
-                        return material.getKey();
-                    }
-                }
-            }
+    static List<String> colorLore(List<String> lore) {
+        for (int i = 0; i < lore.size(); i++) {
+            lore.set(i, color(lore.get(i)));
         }
-        return null;
+        return lore; // For convenience
     }
 
-    public ItemStack getBucketItemStack(String bucket, int amount) {
-        ItemStack item = main.getConfigValues().getBucketIngameItemStack(bucket, amount);
-        ItemMeta itemMeta = item.getItemMeta();
-        itemMeta.setDisplayName(main.getConfigValues().getBucketName(bucket));
-        itemMeta.setLore(main.getConfigValues().getBucketItemLore(bucket));
-        item.setItemMeta(itemMeta);
-        if (main.getConfigValues().bucketItemShouldGlow(bucket)) {
-            item = main.getUtils().addGlow(item);
+    ItemStack itemFromString(String rawItem) {
+        Material material;
+        String[] rawSplit;
+        if (rawItem.contains(":")) {
+            rawSplit = rawItem.split(":");
+        } else {
+            rawSplit = new String[] {rawItem};
         }
-        return item;
+        try {
+            material = Material.valueOf(rawSplit[0]);
+        } catch (IllegalArgumentException ex) {
+            material = Material.DIRT;
+        }
+        short damage = 1;
+        if (rawSplit.length > 1) {
+            try {
+                damage = Short.valueOf(rawSplit[1]);
+            } catch (IllegalArgumentException ignored) {}
+        }
+        return new ItemStack(material, 1, damage);
     }
 
+    Material materialFromString(String rawMaterial) {
+        Material material;
+        String[] rawSplit;
+        if (rawMaterial.contains(":")) {
+            rawSplit = rawMaterial.split(":");
+        } else {
+            rawSplit = new String[] {rawMaterial};
+        }
+        try {
+            material = Material.valueOf(rawSplit[0]);
+        } catch (IllegalArgumentException ex) {
+            material = Material.DIRT;
+        }
+        return material;
+    }
     public ItemStack addGlow(ItemStack item) {
         item.addUnsafeEnchantment(Enchantment.LUCK, 1);
         ItemMeta meta = item.getItemMeta();
@@ -77,8 +91,10 @@ public class Utils {
 
     public void registerRecipes() {
         if (main.getConfigValues().getRecipeBuckets() != null) {
-            for (String bucket : main.getConfigValues().getRecipeBuckets()) {
-                ItemStack item = getBucketItemStack(bucket, main.getConfigValues().getRecipeAmount(bucket));
+            for (String bucketID : main.getConfigValues().getRecipeBuckets()) {
+                Bucket bucket = main.getBucketManager().getBucket(bucketID);
+                ItemStack item = bucket.getItem();
+                item.setAmount(main.getConfigValues().getRecipeAmount(bucket));
                 ShapedRecipe newRecipe = new ShapedRecipe(item);
                 if (main.getConfigValues().getRecipeShape(bucket) != null) {
                     newRecipe.shape(main.getConfigValues().getRecipeShape(bucket).get(0), main.getConfigValues().getRecipeShape(bucket).get(1), main.getConfigValues().getRecipeShape(bucket).get(2));
@@ -128,7 +144,7 @@ public class Utils {
     }
 
     public void updateConfig() {
-        if (main.getConfigValues().getConfigVersion() < 1.1) {
+        if (main.getConfigValues().getConfigVersion() < 1.2) {
             Map<String, Object> oldValues = new HashMap<>();
             for (String oldKey : main.getConfig().getKeys(true)) {
                 oldValues.put(oldKey, main.getConfig().get(oldKey));
@@ -140,7 +156,7 @@ public class Utils {
                     main.getConfig().set(newKey, oldValues.get(newKey));
                 }
             }
-            main.getConfig().set("config-version", 1.1);
+            main.getConfig().set("config-version", 1.2);
             main.saveConfig();
         }
     }
@@ -177,8 +193,10 @@ public class Utils {
                                 newVersion.setColor(ChatColor.RED);
                                 newVersion.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "https://www.spigotmc.org/resources/genbucket-1-8-1-13-turn-any-block-into-a-wall-or-floor.63651/"));
                                 p.spigot().sendMessage(newVersion);
+                                return;
                             } else if (thisVersionNumbers.get(i) > newestVersionNumbers.get(i)) {
                                 p.sendMessage(ChatColor.RED + "You are running a development version of "+main.getDescription().getName()+", " + main.getDescription().getVersion() + ". The latest online version is " + newestVersion + ".");
+                                return;
                             }
                         }
                     }

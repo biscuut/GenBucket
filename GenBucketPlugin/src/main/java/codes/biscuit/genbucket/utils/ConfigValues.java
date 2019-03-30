@@ -1,10 +1,10 @@
 package codes.biscuit.genbucket.utils;
 
 import codes.biscuit.genbucket.GenBucket;
-import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.*;
 
@@ -16,18 +16,43 @@ public class ConfigValues {
         this.main = main;
     }
 
-    Map<String, Material> getBucketItemMaterials() {
-        Map<String, Material> materials = new HashMap<>();
-        for (String key : main.getConfig().getConfigurationSection("items").getKeys(false)) {
+    public void loadBuckets() {
+        main.getBucketManager().getBuckets().clear();
+        for (String bucketId : main.getConfig().getConfigurationSection("items").getKeys(false)) {
+            Bucket bucket = main.getBucketManager().createBucket(bucketId);
+            ItemStack item = main.getUtils().itemFromString(main.getConfig().getString("items."+bucketId+".item.material").toUpperCase());
+            ItemMeta itemMeta = item.getItemMeta();
+            itemMeta.setDisplayName(Utils.color(main.getConfig().getString("items."+bucketId+".item.name")));
+            itemMeta.setLore(Utils.colorLore(main.getConfig().getStringList("items."+bucketId+".item.lore")));
+            item.setItemMeta(itemMeta);
+            if (main.getConfig().getBoolean("items."+bucketId+".item.glow")) {
+                main.getUtils().addGlow(item);
+            }
+            bucket.setItem(item);
+            bucket.setBlockMaterial(main.getUtils().materialFromString(main.getConfig().getString("items."+bucketId+".block.material")));
             try {
-                materials.put(key, Material.valueOf(main.getConfig().getString("items."+key+".item.material")));
-            } catch (Exception ignored) {}
+                bucket.setDirection(Bucket.Direction.valueOf(main.getConfig().getString("items."+bucketId+".block.direction").toUpperCase()));
+            } catch (IllegalArgumentException ex) {
+                main.getBucketManager().getBuckets().remove(bucketId);
+                continue;
+            }
+            bucket.setByChunk(main.getConfig().getBoolean("items."+bucketId+".block.count-by-chunk"));
+            bucket.setPatch(main.getConfig().getBoolean("items."+bucketId+".block.patch"));
+//            bucket.setWidth(main.getConfig().getInt("items."+bucket+".block.width"));
+            ItemStack guiItem = main.getUtils().itemFromString(main.getConfig().getString("items."+bucketId+".gui.material").toUpperCase());
+            itemMeta = guiItem.getItemMeta();
+            itemMeta.setDisplayName(Utils.color(main.getConfig().getString("items."+bucketId+".gui.name")));
+            itemMeta.setLore(Utils.colorLore(main.getConfig().getStringList("items."+bucketId+".gui.lore")));
+            guiItem.setItemMeta(itemMeta);
+            if (main.getConfig().getBoolean("items."+bucketId+".gui.glow")) {
+                main.getUtils().addGlow(guiItem);
+            }
+            bucket.setGuiItem(guiItem);
+            bucket.setSlot(main.getConfig().getInt("items."+bucketId+".gui.slot"));
+            bucket.setBuyPrice(main.getConfig().getDouble("items."+bucketId+".buy-price"));
+            bucket.setPlacePrice(main.getConfig().getDouble("items."+bucketId+".place-price"));
+            bucket.setInfinite(main.getConfig().getBoolean("items."+bucketId+".infinite"));
         }
-        return materials;
-    }
-
-    String getBucketItemName(String bucket) {
-        return Utils.color(main.getConfig().getString("items."+bucket+".item.name"));
     }
 
     public Long getBlockSpeedDelay() {
@@ -35,51 +60,6 @@ public class ConfigValues {
         if (bps<1) bps = 1;
         else if (bps>20) bps = 20;
         return Math.round(1 / bps * 20);
-    }
-
-    public Material getBucketBlockMaterial(String bucket) {
-        String rawMaterial = main.getConfig().getString("items."+bucket+".block.material");
-        Material mat;
-        if (rawMaterial.contains(":")) {
-            rawMaterial = rawMaterial.split(":")[0];
-        }
-        try {
-            mat = Material.valueOf(rawMaterial);
-        } catch (IllegalArgumentException ex) {
-            mat = Material.valueOf("DIRT");
-            main.getLogger().severe("Your bucket block material for "+bucket+" is invalid!");
-        }
-        return mat;
-    }
-
-    ItemStack getBucketIngameItemStack(String bucket, int amount) {
-        String rawMaterial = main.getConfig().getString("items."+bucket+".item.material");
-        Material mat;
-        if (rawMaterial.contains(":")) {
-            String[] materialSplit = rawMaterial.split(":");
-            try {
-                mat = Material.valueOf(materialSplit[0]);
-            } catch (IllegalArgumentException ex) {
-                mat = Material.valueOf("LAVA_BUCKET");
-                main.getLogger().severe("Your bucket item material for "+bucket+" is invalid!");
-            }
-            short damage;
-            try {
-                damage = Short.valueOf(materialSplit[1]);
-            } catch (IllegalArgumentException ex) {
-                damage = 1;
-                main.getLogger().severe("Your bucket item damage/data for "+bucket+" is invalid!");
-            }
-            return new ItemStack(mat, amount, damage);
-        } else {
-            try {
-                mat = Material.valueOf(rawMaterial);
-            } catch (IllegalArgumentException ex) {
-                mat = Material.valueOf("LAVA_BUCKET");
-                main.getLogger().severe("Your bucket item material for "+bucket+" is invalid!");
-            }
-            return new ItemStack(mat, amount);
-        }
     }
 
     public List<Material> getIgnoredBlockList() {
@@ -92,35 +72,6 @@ public class ConfigValues {
         return materialList;
     }
 
-    public String getBucketDirection(String bucket) {
-        return main.getConfig().getString("items."+bucket+".block.direction");
-    }
-
-    public boolean bucketExists(String bucket) {
-        return main.getConfig().isSet("items."+bucket);
-    }
-
-    boolean bucketItemShouldGlow(String bucket) {
-        return main.getConfig().getBoolean("items."+bucket+".item.glow");
-    }
-
-    public Set<String> getBucketList() {
-        return main.getConfig().getConfigurationSection("items").getKeys(false);
-    }
-
-    List<String> getBucketItemLore(String bucket) {
-        List<String> uncolouredList = main.getConfig().getStringList("items."+bucket+".item.lore");
-        List<String> colouredList = new ArrayList<>();
-        for (String s : uncolouredList) {
-            colouredList.add(Utils.color(s));
-        }
-        return colouredList;
-    }
-
-    String getBucketName(String bucket) {
-        return Utils.color(main.getConfig().getString("items."+bucket+".item.name"));
-    }
-
     public boolean giveShouldDropItem() {
         return main.getConfig().getBoolean("give-drop-item-if-full");
     }
@@ -129,14 +80,14 @@ public class ConfigValues {
         return main.getConfig().getBoolean("shop-drop-item-if-full");
     }
 
-    public String getGiveMessage(Player p, int amount, String bucket) {
+    public String getGiveMessage(Player p, int amount, Bucket bucket) {
         return Utils.color(main.getConfig().getString("messages.give"))
-                .replace("{player}", p.getName()).replace("{amount}", String.valueOf(amount)).replace("{bucket}", bucket);
+                .replace("{player}", p.getName()).replace("{amount}", String.valueOf(amount)).replace("{bucket}", bucket.getId());
     }
 
-    public String getReceiveMessage(int amount, double price, String bucket) {
+    public String getReceiveMessage(int amount, double price, Bucket bucket) {
         return Utils.color(main.getConfig().getString("messages.receive"))
-                .replace("{amount}", String.valueOf(amount)).replace("{price}", String.valueOf(price)).replace("{amount}", String.valueOf(amount)).replace("{bucket}", bucket);
+                .replace("{amount}", String.valueOf(amount)).replace("{price}", String.valueOf(price)).replace("{amount}", String.valueOf(amount)).replace("{bucket}", bucket.getId());
     }
 
     public String getNoPermissionCommandMessage() {
@@ -211,14 +162,6 @@ public class ConfigValues {
         return !main.getConfig().getBoolean("factions.can-place-wilderness");
     }
 
-    public boolean isBucketInfinite(String bucket) {
-        return main.getConfig().getBoolean("items."+bucket+".infinite");
-    }
-
-    public double getBucketPlaceCost(String bucket) {
-        return main.getConfig().getDouble("items."+bucket+".place-price");
-    }
-
     public boolean isFactionsHookEnabled() {
         return main.getConfig().getBoolean("hooks.factions");
     }
@@ -233,10 +176,6 @@ public class ConfigValues {
 
     public boolean isCoreProtectHookEnabled() {
         return main.getConfig().getBoolean("hooks.coreprotect");
-    }
-
-    public boolean isNotInfinite(String bucket) {
-        return !main.getConfig().getBoolean("items." + bucket + ".infinite");
     }
 
     public boolean isGUIEnabled() { return main.getConfig().getBoolean("gui.enabled"); }
@@ -349,77 +288,6 @@ public class ConfigValues {
         return main.getConfig().getInt("gui.bulk-buy-amount");
     }
 
-    public String getBucketFromSlot(int slot) {
-        for (String bucket : getBucketList()) {
-            if (main.getConfig().getInt("items."+bucket+".gui.slot") == slot) {
-                return bucket;
-            }
-        }
-        return null;
-    }
-
-    public ItemStack getBucketShopItemStack(String bucket) {
-        String rawMaterial = main.getConfig().getString("items."+bucket+".gui.material");
-        Material mat;
-        if (rawMaterial.contains(":")) {
-            String[] materialSplit = rawMaterial.split(":");
-            try {
-                mat = Material.valueOf(materialSplit[0]);
-            } catch (IllegalArgumentException ex) {
-                mat = Material.valueOf("LAVA_BUCKET");
-                main.getLogger().severe("Your bucket shop item material for "+bucket+" is invalid!");
-            }
-            short damage;
-            try {
-                damage = Short.valueOf(materialSplit[1]);
-            } catch (IllegalArgumentException ex) {
-                damage = 1;
-                main.getLogger().severe("Your bucket shop item damage/data for "+bucket+" is invalid!");
-            }
-            return new ItemStack(mat, 1, damage);
-        } else {
-            try {
-                mat = Material.valueOf(rawMaterial);
-            } catch (IllegalArgumentException ex) {
-                mat = Material.valueOf("LAVA_BUCKET");
-                main.getLogger().severe("Your bucket shop item material for "+bucket+" is invalid!");
-            }
-            return new ItemStack(mat, 1);
-        }
-    }
-
-    public String getBucketShopName(String bucket) {
-        return Utils.color(main.getConfig().getString("items."+bucket+".gui.name"));
-    }
-
-
-    public List<String> getBucketShopLore(String bucket) {
-        List<String> uncolouredList = main.getConfig().getStringList("items."+bucket+".gui.lore");
-        List<String> colouredList = new ArrayList<>();
-        for (String s : uncolouredList) {
-            colouredList.add(Utils.color(s));
-        }
-        return colouredList;
-    }
-
-    public boolean bucketShopShouldGlow(String bucket) {
-        return main.getConfig().getBoolean("items."+bucket+".gui.glow");
-    }
-
-    public String getBucketFromShopName(String name) {
-        name = Utils.color(name);
-        for (String bucket : getBucketList()) {
-            if (Utils.color(main.getConfig().getString("items."+bucket+".gui.name")).equals(name)) {
-                return bucket;
-            }
-        }
-        return null;
-    }
-
-    public double getBucketBuyPrice(String bucket) {
-        return main.getConfig().getDouble("items."+bucket+".buy-price");
-    }
-
     public boolean showUpdateMessage() {
         return main.getConfig().getBoolean("show-update-messages");
     }
@@ -436,7 +304,7 @@ public class ConfigValues {
         if (main.getConfig().getConfigurationSection("recipes") != null) {
             Set<String> bucketList = new HashSet<>();
             for(String key : main.getConfig().getConfigurationSection("recipes").getKeys(false)) {
-                if (bucketExists(key)) bucketList.add(key);
+                if (main.getBucketManager().getBuckets().containsKey(key)) bucketList.add(key);
             }
             return bucketList;
         } else {
@@ -444,10 +312,10 @@ public class ConfigValues {
         }
     }
 
-    Map<Character, Map<Material, Short>> getIngredients(String bucket) {
+    Map<Character, Map<Material, Short>> getIngredients(Bucket bucket) {
         Map<Character, Map<Material, Short>> ingredients = new HashMap<>();
-        for (String ingredientSymbol : main.getConfig().getConfigurationSection("recipes."+bucket+".symbols").getKeys(false)) {
-            String rawMaterial = main.getConfig().getString("recipes."+bucket+".symbols."+ingredientSymbol);
+        for (String ingredientSymbol : main.getConfig().getConfigurationSection("recipes."+bucket.getId()+".symbols").getKeys(false)) {
+            String rawMaterial = main.getConfig().getString("recipes."+bucket.getId()+".symbols."+ingredientSymbol);
             Material mat;
             short damage = 1;
             if (rawMaterial.contains(":")) {
@@ -455,20 +323,20 @@ public class ConfigValues {
                 try {
                     mat = Material.valueOf(materialSplit[0]);
                 } catch (IllegalArgumentException ex) {
-                    main.getLogger().severe("Your ingredient material for symbol "+ingredientSymbol+" in bucket "+bucket+" is invalid!");
+                    main.getLogger().severe("Your ingredient material for symbol "+ingredientSymbol+" in bucket "+bucket.getId()+" is invalid!");
                     return null;
                 }
                 try {
                     damage = Short.valueOf(materialSplit[1]);
                 } catch (IllegalArgumentException ex) {
-                    main.getLogger().severe("Your ingredient data/damage for symbol "+ingredientSymbol+" in bucket "+bucket+" is invalid!");
+                    main.getLogger().severe("Your ingredient data/damage for symbol "+ingredientSymbol+" in bucket "+bucket.getId()+" is invalid!");
                     return null;
                 }
             } else {
                 try {
                     mat = Material.valueOf(rawMaterial);
                 } catch (IllegalArgumentException ex) {
-                    main.getLogger().severe("Your ingredient material for symbol "+ingredientSymbol+" in bucket "+bucket+" is invalid!");
+                    main.getLogger().severe("Your ingredient material for symbol "+ingredientSymbol+" in bucket "+bucket.getId()+" is invalid!");
                     return null;
                 }
             }
@@ -483,12 +351,12 @@ public class ConfigValues {
         }
     }
 
-    int getRecipeAmount(String bucket) {
-        return main.getConfig().getInt("recipes."+bucket+".outcome-amount");
+    int getRecipeAmount(Bucket bucket) {
+        return main.getConfig().getInt("recipes."+bucket.getId()+".outcome-amount");
     }
 
-    List<String> getRecipeShape(String bucket) {
-        List<String> shapeList = main.getConfig().getStringList("recipes."+bucket+".recipe");
+    List<String> getRecipeShape(Bucket bucket) {
+        List<String> shapeList = main.getConfig().getStringList("recipes."+bucket.getId()+".recipe");
         if(shapeList.size() == 3) {
             return shapeList;
         } else {

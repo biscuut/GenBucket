@@ -1,6 +1,7 @@
 package codes.biscuit.genbucket.commands;
 
 import codes.biscuit.genbucket.GenBucket;
+import codes.biscuit.genbucket.utils.Bucket;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
@@ -30,8 +31,8 @@ public class GenBucketAdminCommand implements TabExecutor {
             }
             return arguments;
         } else if (args.length == 3 && args[0].equalsIgnoreCase("give")) {
-            List<String> arguments = new ArrayList<>(main.getConfigValues().getBucketList());
-            for (String arg : main.getConfigValues().getBucketList()) {
+            List<String> arguments = new ArrayList<>(main.getBucketManager().getBuckets().keySet());
+            for (String arg : main.getBucketManager().getBuckets().keySet()) {
                 if (!arg.startsWith(args[2].toLowerCase())) {
                     arguments.remove(arg);
                 }
@@ -51,8 +52,8 @@ public class GenBucketAdminCommand implements TabExecutor {
                             Player p = Bukkit.getPlayerExact(args[1]);
                             if (p != null) {
                                 if (args.length > 2) {
-                                    String bucket = args[2];
-                                    if (main.getConfigValues().bucketExists(bucket)) {
+                                    Bucket bucket = main.getBucketManager().getBucket(args[2]);
+                                    if (bucket != null) {
                                         int giveAmount = 1;
                                         if (args.length > 3) {
                                             try {
@@ -62,7 +63,8 @@ public class GenBucketAdminCommand implements TabExecutor {
                                                 return false;
                                             }
                                         }
-                                        ItemStack item = main.getUtils().getBucketItemStack(bucket, giveAmount);
+                                        ItemStack item = bucket.getItem();
+                                        item.setAmount(giveAmount);
                                         Map excessItems;
                                         if (!main.getConfigValues().giveShouldDropItem()) {
                                             if (giveAmount < 65) {
@@ -88,7 +90,7 @@ public class GenBucketAdminCommand implements TabExecutor {
                                                 p.getWorld().dropItemNaturally(p.getLocation(), (ItemStack) excessItem);
                                             }
                                         }
-                                        double price = main.getConfigValues().getBucketBuyPrice(bucket) * giveAmount;
+                                        double price = bucket.getBuyPrice() * giveAmount;
                                         if (!main.getConfigValues().getGiveMessage(p, giveAmount, bucket).equals("")) {
                                             sender.sendMessage(main.getConfigValues().getGiveMessage(p, giveAmount, bucket));
                                         }
@@ -116,6 +118,7 @@ public class GenBucketAdminCommand implements TabExecutor {
                 case "reload":
                     if (sender.hasPermission("genbucket.reload")) {
                         main.reloadConfig();
+                        main.getConfigValues().loadBuckets();
                         main.getUtils().reloadRecipes();
                         sender.sendMessage(ChatColor.GREEN + "Successfully reloaded the config. Most values have been instantly updated.");
                     } else {

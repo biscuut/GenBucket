@@ -1,6 +1,7 @@
 package codes.biscuit.genbucket.hooks;
 
 import codes.biscuit.genbucket.GenBucket;
+import codes.biscuit.genbucket.utils.Bucket;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.*;
 import org.bukkit.block.Block;
@@ -141,11 +142,12 @@ public class HookUtils {
                     return false;
                 }
             }
-            WorldBorder border = p.getWorld().getWorldBorder();
-            double radius = border.getSize() / 2;
+            WorldBorder border = block.getWorld().getWorldBorder();
+            double x = block.getBlockX();
+            double z = block.getBlockZ();
+            double size = border.getSize()/2;
             Location center = border.getCenter();
-            double x = block.getX() - center.getX(), z = block.getZ() - center.getZ();
-            return !(x >= radius || -x > radius) || (z >= radius || -z > radius);
+            return !((x > center.clone().add(size, 0, 0).getX() || z > center.clone().add(0, 0, size).getZ()) || (x < center.clone().subtract(size,0,0).getX() || (z < center.clone().subtract(0,0, size).getZ())));
         }
         return true;
     }
@@ -180,16 +182,16 @@ public class HookUtils {
         }
     }
 
-    public boolean takeBucketPlaceCost(Player p, String bucket) {
+    public boolean takeBucketPlaceCost(Player p, Bucket bucket) {
         if (bypassPlayers.contains(p)) {
             return true;
         }
-        if (hasMoney(p, main.getConfigValues().getBucketPlaceCost(bucket))) {
-            removeMoney(p, main.getConfigValues().getBucketPlaceCost(bucket));
+        if (hasMoney(p, bucket.getPlacePrice())) {
+            removeMoney(p, bucket.getPlacePrice());
             return true;
         } else {
-            if (!main.getConfigValues().notEnoughMoneyPlaceMessage(main.getConfigValues().getBucketPlaceCost(bucket)).equals("")) {
-                p.sendMessage(main.getConfigValues().notEnoughMoneyPlaceMessage(main.getConfigValues().getBucketPlaceCost(bucket)));
+            if (!main.getConfigValues().notEnoughMoneyPlaceMessage(bucket.getPlacePrice()).equals("")) {
+                p.sendMessage(main.getConfigValues().notEnoughMoneyPlaceMessage(bucket.getPlacePrice()));
             }
             return false;
         }

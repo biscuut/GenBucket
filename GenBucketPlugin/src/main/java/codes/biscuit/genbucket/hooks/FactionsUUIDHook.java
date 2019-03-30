@@ -6,6 +6,7 @@ import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 // Also works for SavageFactions
+@SuppressWarnings("BooleanMethodIsAlwaysInverted")
 class FactionsUUIDHook {
 
     boolean hasFaction(Player p) {

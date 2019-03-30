@@ -1,6 +1,7 @@
 package codes.biscuit.genbucket.commands;
 
 import codes.biscuit.genbucket.GenBucket;
+import codes.biscuit.genbucket.utils.Bucket;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -49,18 +50,9 @@ public class GenBucketCommand implements CommandExecutor {
                             }
                         }
                         for (int i = 0; i < 9 * main.getConfigValues().getGUIRows(); i++) {
-                            if (main.getConfigValues().getBucketFromSlot(i) != null) {
-                                String bucket = main.getConfigValues().getBucketFromSlot(i);
-                                ItemStack bucketItem = main.getConfigValues().getBucketShopItemStack(bucket);
-                                if (!bucketItem.getType().equals(Material.AIR)) {
-                                    ItemMeta bucketItemMeta = bucketItem.getItemMeta();
-                                    bucketItemMeta.setDisplayName(main.getConfigValues().getBucketShopName(bucket));
-                                    bucketItemMeta.setLore(main.getConfigValues().getBucketShopLore(bucket));
-                                    bucketItem.setItemMeta(bucketItemMeta);
-                                    if (main.getConfigValues().bucketShopShouldGlow(bucket)) {
-                                        bucketItem = main.getUtils().addGlow(bucketItem);
-                                    }
-                                }
+                            Bucket bucket = main.getBucketManager().fromSlot(i);
+                            if (bucket != null) {
+                                ItemStack bucketItem = bucket.getGuiItem();
                                 confirmInv.setItem(i, bucketItem);
                             } else if (main.getConfigValues().getExitSlots().contains(i)) {
                                 confirmInv.setItem(i, exitItem);

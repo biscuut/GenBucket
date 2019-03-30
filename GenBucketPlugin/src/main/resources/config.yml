@@ -45,7 +45,7 @@ enable-cancelling: true
 # Define your genbuckets here. This part may get a bit confusing with all the indents, its best to copy one of the examples
 # and then just edit it to your liking. Feel free to double check your formatting @ http://yaml-online-parser.appspot.com/.
 items:
-  omnidirectional_cobble: # The name of the bucket, can be anything. No spaces! This will be used to get the item ingame.
+  any_direction_cobble: # The name of the bucket, can be anything. No spaces! This will be used to get the item ingame.
     item:
       name: '&7Any Direction Cobble Bucket' # The item name when in the player's inventory.
       material: 'COBBLESTONE'  # The item material when in the player's inventory. Feel free to use data/damage values.
@@ -59,10 +59,10 @@ items:
       # 'UPWARDS' - Will gen up from the block it's placed on
       # 'DOWNWARDS' - Will gen down from the block it's placed on. (TIP: Do not use for blocks with gravity like sand/gravel)
       # 'HORIZONTAL' - Will gen sideways from the block it's placed on. The direction depends on what the bucket was placed against.
-      # 'HORIZONTAL_BY_CHUNK' - Will gen sideways from the block it's placed on. The direction depends on what the bucket was placed against.
       # 'ANY' - Can gen upwards, downwards, or horizontally. The direction depends on what the bucket was placed against.
-      # 'ANY_BY_CHUNK' - Can gen upwards, downwards, or horizontally by chunk. The direction depends on what the bucket was placed against.
       direction: 'ANY'
+      count-by-chunk: false # This means it will count chunks instead of blocks while generating.
+      patch: false # Whether this is a patch bucket- meaning it can go through blocks of its same type to patch holes.
     gui:
       name: '&7Any Direction Cobble Bucket (BUY)' # The item name shown in the shop gui.
       material: 'COBBLESTONE' # The material name shown in the shop gui.
@@ -87,6 +87,8 @@ items:
     block:
       material: 'OBSIDIAN'
       direction: 'HORIZONTAL'
+      count-by-chunk: false
+      patch: false
     gui:
       name: '&7Horizontal Cobble Bucket (BUY)'
       material: 'OBSIDIAN'
@@ -189,4 +191,4 @@ messages:
 show-update-messages: true
 
 # Please do not change.
-config-version: 1.1
+config-version: 1.2
