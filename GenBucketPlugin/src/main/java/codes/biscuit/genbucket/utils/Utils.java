@@ -57,7 +57,7 @@ public class Utils {
         } catch (IllegalArgumentException ex) {
             material = Material.DIRT;
         }
-        short damage = 1;
+        short damage = 0;
         if (rawSplit.length > 1) {
             try {
                 damage = Short.valueOf(rawSplit[1]);
@@ -81,6 +81,7 @@ public class Utils {
         }
         return material;
     }
+
     public ItemStack addGlow(ItemStack item) {
         item.addUnsafeEnchantment(Enchantment.LUCK, 1);
         ItemMeta meta = item.getItemMeta();

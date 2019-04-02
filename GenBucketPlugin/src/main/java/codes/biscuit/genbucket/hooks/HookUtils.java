@@ -147,7 +147,7 @@ public class HookUtils {
             double z = block.getBlockZ();
             double size = border.getSize()/2;
             Location center = border.getCenter();
-            return !((x > center.clone().add(size, 0, 0).getX() || z > center.clone().add(0, 0, size).getZ()) || (x < center.clone().subtract(size,0,0).getX() || (z < center.clone().subtract(0,0, size).getZ())));
+            return !((x >= center.clone().add(size, 0, 0).getX() || z >= center.clone().add(0, 0, size).getZ()) || (x <= center.clone().subtract(size,0,0).getX() || (z <= center.clone().subtract(0,0, size).getZ())));
         }
         return true;
     }
