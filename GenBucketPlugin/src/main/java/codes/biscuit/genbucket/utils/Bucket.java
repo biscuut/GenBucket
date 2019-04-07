@@ -1,13 +1,12 @@
 package codes.biscuit.genbucket.utils;
 
-import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
 public class Bucket {
 
     private String id;
     private ItemStack item;
-    private Material blockMaterial;
+    private ItemStack blockItem;
     private Direction direction;
     private boolean byChunk;
     private boolean isPatch;
@@ -40,14 +39,6 @@ public class Bucket {
 
     void setGuiItem(ItemStack guiItem) {
         this.guiItem = guiItem;
-    }
-
-    public Material getBlockMaterial() {
-        return blockMaterial;
-    }
-
-    void setBlockMaterial(Material blockMaterial) {
-        this.blockMaterial = blockMaterial;
     }
 
     public Direction getDirection() {
@@ -104,6 +95,14 @@ public class Bucket {
 
     void setPlacePrice(double placePrice) {
         this.placePrice = placePrice;
+    }
+
+    public ItemStack getBlockItem() {
+        return blockItem;
+    }
+
+    void setBlockItem(ItemStack blockItem) {
+        this.blockItem = blockItem;
     }
 
     @SuppressWarnings("unused")

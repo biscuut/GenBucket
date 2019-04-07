@@ -29,7 +29,7 @@ public class ConfigValues {
                 main.getUtils().addGlow(item);
             }
             bucket.setItem(item);
-            bucket.setBlockMaterial(main.getUtils().materialFromString(main.getConfig().getString("items."+bucketId+".block.material")));
+            bucket.setBlockItem(main.getUtils().itemFromString(main.getConfig().getString("items."+bucketId+".block.material")));
             try {
                 bucket.setDirection(Bucket.Direction.valueOf(main.getConfig().getString("items."+bucketId+".block.direction").toUpperCase()));
             } catch (IllegalArgumentException ex) {

@@ -66,22 +66,6 @@ public class Utils {
         return new ItemStack(material, 1, damage);
     }
 
-    Material materialFromString(String rawMaterial) {
-        Material material;
-        String[] rawSplit;
-        if (rawMaterial.contains(":")) {
-            rawSplit = rawMaterial.split(":");
-        } else {
-            rawSplit = new String[] {rawMaterial};
-        }
-        try {
-            material = Material.valueOf(rawSplit[0]);
-        } catch (IllegalArgumentException ex) {
-            material = Material.DIRT;
-        }
-        return material;
-    }
-
     public ItemStack addGlow(ItemStack item) {
         item.addUnsafeEnchantment(Enchantment.LUCK, 1);
         ItemMeta meta = item.getItemMeta();
