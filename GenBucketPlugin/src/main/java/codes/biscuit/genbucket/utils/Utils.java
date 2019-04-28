@@ -74,32 +74,27 @@ public class Utils {
         return item;
     }
 
+    @SuppressWarnings("deprecation")
     public void registerRecipes() {
         if (main.getConfigValues().getRecipeBuckets() != null) {
             for (String bucketID : main.getConfigValues().getRecipeBuckets()) {
                 Bucket bucket = main.getBucketManager().getBucket(bucketID);
                 ItemStack item = bucket.getItem();
-                item.setAmount(main.getConfigValues().getRecipeAmount(bucket));
+                item.setAmount(bucket.getRecipeAmount());
                 ShapedRecipe newRecipe = new ShapedRecipe(item);
-                if (main.getConfigValues().getRecipeShape(bucket) != null) {
-                    newRecipe.shape(main.getConfigValues().getRecipeShape(bucket).get(0), main.getConfigValues().getRecipeShape(bucket).get(1), main.getConfigValues().getRecipeShape(bucket).get(2));
+                if (bucket.getRecipeShape() != null) {
+                    newRecipe.shape(bucket.getRecipeShape().get(0), bucket.getRecipeShape().get(1), bucket.getRecipeShape().get(2));
                 } else {
                     continue;
                 }
-                if (main.getConfigValues().getIngredients(bucket) != null) {
-                    for (Map.Entry<Character, Map<Material, Short>> ingredient : main.getConfigValues().getIngredients(bucket).entrySet()) {
-                        Material mat = null;
-                        for (Material loopMat : ingredient.getValue().keySet()) mat = loopMat;
-                        short data;
-                        if (mat != null) {
-                            data = ingredient.getValue().get(mat);
+                if (bucket.getIngredients() != null) {
+                    for (Map.Entry<Character, ItemStack> ingredient : bucket.getIngredients().entrySet()) {
+                        char symbol = ingredient.getKey();
+                        ItemStack ingredientItem = ingredient.getValue();
+                        if (ingredientItem.getData().getData() != 1) {
+                            newRecipe.setIngredient(symbol, ingredientItem.getData());
                         } else {
-                            continue;
-                        }
-                        if (data != 1) {
-                            newRecipe.setIngredient(ingredient.getKey(), new ItemStack(mat, 1, data).getData());
-                        } else {
-                            newRecipe.setIngredient(ingredient.getKey(), mat);
+                            newRecipe.setIngredient(symbol, ingredientItem.getType());
                         }
                     }
                 } else {
@@ -129,7 +124,7 @@ public class Utils {
     }
 
     public void updateConfig() {
-        if (main.getConfigValues().getConfigVersion() < 1.2) {
+        if (main.getConfigValues().getConfigVersion() < 1.3) {
             Map<String, Object> oldValues = new HashMap<>();
             for (String oldKey : main.getConfig().getKeys(true)) {
                 oldValues.put(oldKey, main.getConfig().get(oldKey));
@@ -141,7 +136,7 @@ public class Utils {
                     main.getConfig().set(newKey, oldValues.get(newKey));
                 }
             }
-            main.getConfig().set("config-version", 1.2);
+            main.getConfig().set("config-version", 1.3);
             main.saveConfig();
         }
     }

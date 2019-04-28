@@ -48,6 +48,17 @@ public class HookUtils {
             main.getLogger().info("Hooked into CoreProtect");
             enabledHooks.put(Hooks.COREPROTECT, new CoreProtectHook());
         }
+        if (main.isUnderOneThirteen()) {
+            main.getLogger().info("Hooked into Minecraft < 1.13");
+            enabledHooks.put(Hooks.MINECRAFTONEEIGHT, new Minecraft_1_8());
+        }
+    }
+
+    public void setData(Block block, byte data) {
+        if (enabledHooks.containsKey(Hooks.MINECRAFTONEEIGHT)) {
+            MinecraftAbstraction minecraftHook = (MinecraftAbstraction)enabledHooks.get(Hooks.MINECRAFTONEEIGHT);
+            minecraftHook.setBlockData(block, data);
+        }
     }
 
     public boolean canPlaceHere(Player p, Location loc) {
@@ -248,6 +259,7 @@ public class HookUtils {
         MASSIVECOREFACTIONS,
         COREPROTECT,
         WORLDGUARD,
-        WORLDBORDER
+        WORLDBORDER,
+        MINECRAFTONEEIGHT
     }
 }

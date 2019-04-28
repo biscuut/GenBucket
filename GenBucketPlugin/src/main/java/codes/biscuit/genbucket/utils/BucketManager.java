@@ -27,7 +27,7 @@ public class BucketManager {
         for (Map.Entry<String, Bucket> entry : buckets.entrySet()) {
             Bucket bucket = getBucket(entry.getKey());
             ItemStack otherItem = bucket.getItem();
-            if (otherItem.getType() == item.getType() && ((item.hasItemMeta() && otherItem.hasItemMeta()) || (!item.hasItemMeta() && !otherItem.hasItemMeta()))
+            if (otherItem.getType() == item.getType() && ((item.hasItemMeta() && otherItem.getItemMeta().hasDisplayName()) || (!item.hasItemMeta() && !otherItem.getItemMeta().hasDisplayName()))
                     && otherItem.getItemMeta().getDisplayName().equals(item.getItemMeta().getDisplayName()) && ((!otherItem.getItemMeta().hasLore() && !item.getItemMeta().hasLore()) || (otherItem.getItemMeta().getLore().containsAll(item.getItemMeta().getLore())))) {
                 return bucket;
             }

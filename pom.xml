@@ -13,6 +13,7 @@
         <module>GenBucketPlugin</module>
         <module>WG_6</module>
         <module>WG_7</module>
+        <module>MC_1_8</module>
     </modules>
     <name>GenBucketParent</name>
 

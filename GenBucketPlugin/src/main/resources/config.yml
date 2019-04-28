@@ -42,6 +42,12 @@ sponge-check-radius: 0.0
 # Allows you to punch/break a fake wool block at the base of the genbucket to cancel it.
 enable-cancelling: true
 
+# Should a block be added under gravity blocks to allow it to generate downwards smoothly?
+add-block-under-gravity-blocks: true
+
+# The block used for the above confition.
+gravity-block: COBBLESTONE
+
 # Define your genbuckets here. This part may get a bit confusing with all the indents, its best to copy one of the examples
 # and then just edit it to your liking. Feel free to double check your formatting @ http://yaml-online-parser.appspot.com/.
 items:
@@ -139,7 +145,7 @@ ignored-blocks:
 
 # Define custom recipes for your buckets here. Read the comments carefully to learn how they work.
 recipes:
-  omnidirectional_cobble: # Specify the bucket name here.
+  any_direction_cobble: # Specify the bucket name here.
     symbols: # Specify symbols to represent items (makes your life easier). The symbol can be any single-letter character. Don't list symbols that you don't use in recipe:.
       O: 'OBSIDIAN'
       B: 'BARRIER'
@@ -191,4 +197,4 @@ messages:
 show-update-messages: true
 
 # Please do not change.
-config-version: 1.2
+config-version: 1.3

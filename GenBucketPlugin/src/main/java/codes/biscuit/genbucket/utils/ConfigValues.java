@@ -11,6 +11,33 @@ import java.util.*;
 public class ConfigValues {
 
     private GenBucket main;
+    private long blockSpeed;
+    private List<Material> ignoredMaterials;
+    private String giveMessage;
+    private String recieveMessage;
+    private String noPermissionCommandMessage;
+    private String noPermissionPlaceMessage;
+    private String noFactionMessage;
+    private String onlyClaimMessage;
+    private String placeNormalMessage;
+    private String placeInfiniteMessage;
+    private String notEnoughMoneyPlaceMessage;
+    private String notEnoughMoneyBuyMessage;
+    private String wrongDirectionMessage;
+    private String noSpaceBuyMessage;
+    private String cannotPlaceYLevelMessage;
+    private String buyConfirmationMessage;
+    private String nearbyPlayerMessage;
+    private ItemStack exitItemStack;
+    private ItemStack fillItemStack;
+    private String guiTitle;
+    private String exitName;
+    private String fillName;
+    private List<String> exitLore;
+    private List<String> fillLore;
+    private List<Integer> exitSlots;
+    private Set<String> recipeBuckets;
+    private ItemStack gravityBlock;
 
     public ConfigValues(GenBucket main) {
         this.main = main;
@@ -18,58 +45,120 @@ public class ConfigValues {
 
     public void loadBuckets() {
         main.getBucketManager().getBuckets().clear();
-        for (String bucketId : main.getConfig().getConfigurationSection("items").getKeys(false)) {
-            Bucket bucket = main.getBucketManager().createBucket(bucketId);
-            ItemStack item = main.getUtils().itemFromString(main.getConfig().getString("items."+bucketId+".item.material").toUpperCase());
-            ItemMeta itemMeta = item.getItemMeta();
-            itemMeta.setDisplayName(Utils.color(main.getConfig().getString("items."+bucketId+".item.name")));
-            itemMeta.setLore(Utils.colorLore(main.getConfig().getStringList("items."+bucketId+".item.lore")));
-            item.setItemMeta(itemMeta);
-            if (main.getConfig().getBoolean("items."+bucketId+".item.glow")) {
-                main.getUtils().addGlow(item);
-            }
-            bucket.setItem(item);
-            bucket.setBlockItem(main.getUtils().itemFromString(main.getConfig().getString("items."+bucketId+".block.material")));
-            try {
-                bucket.setDirection(Bucket.Direction.valueOf(main.getConfig().getString("items."+bucketId+".block.direction").toUpperCase()));
-            } catch (IllegalArgumentException ex) {
-                main.getBucketManager().getBuckets().remove(bucketId);
-                continue;
-            }
-            bucket.setByChunk(main.getConfig().getBoolean("items."+bucketId+".block.count-by-chunk"));
-            bucket.setPatch(main.getConfig().getBoolean("items."+bucketId+".block.patch"));
-//            bucket.setWidth(main.getConfig().getInt("items."+bucket+".block.width"));
-            ItemStack guiItem = main.getUtils().itemFromString(main.getConfig().getString("items."+bucketId+".gui.material").toUpperCase());
-            itemMeta = guiItem.getItemMeta();
-            itemMeta.setDisplayName(Utils.color(main.getConfig().getString("items."+bucketId+".gui.name")));
-            itemMeta.setLore(Utils.colorLore(main.getConfig().getStringList("items."+bucketId+".gui.lore")));
-            guiItem.setItemMeta(itemMeta);
-            if (main.getConfig().getBoolean("items."+bucketId+".gui.glow")) {
-                main.getUtils().addGlow(guiItem);
-            }
-            bucket.setGuiItem(guiItem);
-            bucket.setSlot(main.getConfig().getInt("items."+bucketId+".gui.slot"));
-            bucket.setBuyPrice(main.getConfig().getDouble("items."+bucketId+".buy-price"));
-            bucket.setPlacePrice(main.getConfig().getDouble("items."+bucketId+".place-price"));
-            bucket.setInfinite(main.getConfig().getBoolean("items."+bucketId+".infinite"));
-        }
-    }
+        if (main.getConfig().contains("items")) {
+            for (String bucketId : main.getConfig().getConfigurationSection("items").getKeys(false)) {
+                Bucket bucket = main.getBucketManager().createBucket(bucketId);
+                ItemStack item = main.getUtils().itemFromString(main.getConfig().getString("items." + bucketId + ".item.material").toUpperCase());
+                ItemMeta itemMeta = item.getItemMeta();
+                itemMeta.setDisplayName(Utils.color(main.getConfig().getString("items." + bucketId + ".item.name")));
+                itemMeta.setLore(Utils.colorLore(main.getConfig().getStringList("items." + bucketId + ".item.lore")));
+                item.setItemMeta(itemMeta);
+                if (main.getConfig().getBoolean("items." + bucketId + ".item.glow")) {
+                    main.getUtils().addGlow(item);
+                }
+                bucket.setItem(item);
+                bucket.setBlockItem(main.getUtils().itemFromString(main.getConfig().getString("items." + bucketId + ".block.material")));
+                try {
+                    bucket.setDirection(Bucket.Direction.valueOf(main.getConfig().getString("items." + bucketId + ".block.direction").toUpperCase()));
+                } catch (IllegalArgumentException ex) {
+                    main.getBucketManager().getBuckets().remove(bucketId);
+                    continue;
+                }
+                bucket.setByChunk(main.getConfig().getBoolean("items." + bucketId + ".block.count-by-chunk"));
+                bucket.setPatch(main.getConfig().getBoolean("items." + bucketId + ".block.patch"));
+                ItemStack guiItem = main.getUtils().itemFromString(main.getConfig().getString("items." + bucketId + ".gui.material").toUpperCase());
+                itemMeta = guiItem.getItemMeta();
+                itemMeta.setDisplayName(Utils.color(main.getConfig().getString("items." + bucketId + ".gui.name")));
+                itemMeta.setLore(Utils.colorLore(main.getConfig().getStringList("items." + bucketId + ".gui.lore")));
+                guiItem.setItemMeta(itemMeta);
+                if (main.getConfig().getBoolean("items." + bucketId + ".gui.glow")) {
+                    main.getUtils().addGlow(guiItem);
+                }
+                bucket.setGuiItem(guiItem);
+                bucket.setSlot(main.getConfig().getInt("items." + bucketId + ".gui.slot"));
+                bucket.setBuyPrice(main.getConfig().getDouble("items." + bucketId + ".buy-price"));
+                bucket.setPlacePrice(main.getConfig().getDouble("items." + bucketId + ".place-price"));
+                bucket.setInfinite(main.getConfig().getBoolean("items." + bucketId + ".infinite"));
 
-    public Long getBlockSpeedDelay() {
+                bucket.setIngredients(null);
+                Map<Character, ItemStack> ingredients = new HashMap<>();
+                if (main.getConfig().contains("recipes." + bucketId + ".symbols")) {
+                    for (String ingredientSymbol : main.getConfig().getConfigurationSection("recipes." + bucketId + ".symbols").getKeys(false)) {
+                        ItemStack ingredientItem = main.getUtils().itemFromString(main.getConfig().getString("recipes." + bucketId + ".symbols." + ingredientSymbol));
+                        ingredients.put(ingredientSymbol.toCharArray()[0], ingredientItem);
+                    }
+                    if (ingredients.size() > 0) {
+                        bucket.setIngredients(ingredients);
+                    }
+                }
+                bucket.setRecipeShape(null);
+                if (main.getConfig().contains("recipes." + bucketId + ".recipe")) {
+                    List<String> shapeList = main.getConfig().getStringList("recipes." + bucketId + ".recipe");
+                    if (shapeList.size() == 3) {
+                        bucket.setRecipeShape(shapeList);
+                    }
+                }
+                if (main.getConfig().contains("recipes." + bucketId + ".outcome-amount")) {
+                    bucket.setRecipeAmount(main.getConfig().getInt("recipes." + bucketId + ".outcome-amount"));
+                } else {
+                    bucket.setRecipeAmount(0);
+                }
+                exitSlots = main.getConfig().getIntegerList("gui.exit.slots");
+            }
+        }
+
+        // other config values
         double bps = main.getConfig().getDouble("speed");
         if (bps<1) bps = 1;
         else if (bps>20) bps = 20;
-        return Math.round(1 / bps * 20);
+        blockSpeed = Math.round(1 / bps * 20);
+
+        ignoredMaterials = new ArrayList<>();
+        for (String rawMaterial : main.getConfig().getStringList("ignored-blocks")) {
+            try {
+                ignoredMaterials.add(Material.valueOf(rawMaterial));
+            } catch (Exception ignored) {}
+        }
+
+        giveMessage = Utils.color(main.getConfig().getString("messages.give"));
+        recieveMessage = Utils.color(main.getConfig().getString("messages.receive"));
+        noPermissionCommandMessage = Utils.color(main.getConfig().getString("messages.no-permission-command"));
+        noPermissionPlaceMessage = Utils.color(main.getConfig().getString("messages.no-permission-place"));
+        noFactionMessage = Utils.color(main.getConfig().getString("messages.no-faction"));
+        onlyClaimMessage = Utils.color(main.getConfig().getString("messages.cannot-place-claim"));
+        placeNormalMessage = Utils.color(main.getConfig().getString("messages.place-message-regular"));
+        placeInfiniteMessage = Utils.color(main.getConfig().getString("messages.place-message-infinite"));
+        notEnoughMoneyPlaceMessage = Utils.color(main.getConfig().getString("messages.not-enough-money-place"));
+        notEnoughMoneyBuyMessage = Utils.color(main.getConfig().getString("messages.not-enough-money-shop"));
+        wrongDirectionMessage = Utils.color(main.getConfig().getString("messages.wrong-direction"));
+        noSpaceBuyMessage = Utils.color(main.getConfig().getString("messages.not-enough-space-buy"));
+        cannotPlaceYLevelMessage = Utils.color(main.getConfig().getString("messages.cannot-place-y-level"));
+        buyConfirmationMessage = Utils.color(main.getConfig().getString("messages.buy-success"));
+        nearbyPlayerMessage = Utils.color(main.getConfig().getString("messages.cannot-place-nearby-players"));
+        exitItemStack = main.getUtils().itemFromString(main.getConfig().getString("gui.exit.item"));
+        fillItemStack = main.getUtils().itemFromString(main.getConfig().getString("gui.fill.item"));
+        guiTitle = Utils.color(main.getConfig().getString("gui.title"));
+        exitName = Utils.color(main.getConfig().getString("gui.exit.name"));
+        fillName = Utils.color(main.getConfig().getString("gui.fill.name"));
+        exitLore = Utils.colorLore(main.getConfig().getStringList("gui.exit.lore"));
+        fillLore = Utils.colorLore(main.getConfig().getStringList("gui.fill.lore"));
+        if (main.getConfig().getConfigurationSection("recipes") != null) {
+            recipeBuckets = new HashSet<>();
+            for(String key : main.getConfig().getConfigurationSection("recipes").getKeys(false)) {
+                if (main.getBucketManager().getBuckets().containsKey(key)) recipeBuckets.add(key);
+            }
+        } else {
+            recipeBuckets = null;
+        }
+        gravityBlock = main.getUtils().itemFromString(main.getConfig().getString("gravity-block"));
+    }
+
+    public Long getBlockSpeedDelay() {
+        return blockSpeed;
     }
 
     public List<Material> getIgnoredBlockList() {
-        List<Material> materialList = new ArrayList<>();
-        for (String rawMaterial : main.getConfig().getStringList("ignored-blocks")) {
-            try {
-                materialList.add(Material.valueOf(rawMaterial));
-            } catch (Exception ignored) {}
-        }
-        return materialList;
+        return ignoredMaterials;
     }
 
     public boolean giveShouldDropItem() {
@@ -81,69 +170,63 @@ public class ConfigValues {
     }
 
     public String getGiveMessage(Player p, int amount, Bucket bucket) {
-        return Utils.color(main.getConfig().getString("messages.give"))
-                .replace("{player}", p.getName()).replace("{amount}", String.valueOf(amount)).replace("{bucket}", bucket.getId());
+        return giveMessage.replace("{player}", p.getName()).replace("{amount}", String.valueOf(amount)).replace("{bucket}", bucket.getId());
     }
 
     public String getReceiveMessage(int amount, double price, Bucket bucket) {
-        return Utils.color(main.getConfig().getString("messages.receive"))
-                .replace("{amount}", String.valueOf(amount)).replace("{price}", String.valueOf(price)).replace("{amount}", String.valueOf(amount)).replace("{bucket}", bucket.getId());
+        return recieveMessage.replace("{amount}", String.valueOf(amount)).replace("{price}", String.valueOf(price)).replace("{amount}", String.valueOf(amount)).replace("{bucket}", bucket.getId());
     }
 
     public String getNoPermissionCommandMessage() {
-        return Utils.color(main.getConfig().getString("messages.no-permission-command"));
+        return noPermissionCommandMessage;
     }
 
     public String getNoPermissionPlaceMessage() {
-        return Utils.color(main.getConfig().getString("messages.no-permission-place"));
+        return noPermissionPlaceMessage;
     }
 
     public String getNoFactionMessage() {
-        return Utils.color(main.getConfig().getString("messages.no-faction"));
+        return noFactionMessage;
     }
 
     public String getOnlyClaimMessage() {
-        return Utils.color(main.getConfig().getString("messages.cannot-place-claim"));
+        return onlyClaimMessage;
     }
 
-//    public String getRegionProtectedMessage() {
-//        return Utils.color(main.getConfig().getString("messages.region-protected"));
-//    }
-
     public String getPlaceNormalMessage(double money) {
-        return Utils.color(main.getConfig().getString("messages.place-message-regular").replace("{money}", String.valueOf(money)));
+        return placeNormalMessage.replace("{money}", String.valueOf(money));
     }
 
     public String getPlaceInfiniteMessage(double money) {
-        return Utils.color(main.getConfig().getString("messages.place-message-infinite").replace("{money}", String.valueOf(money)));
+        return placeInfiniteMessage.replace("{money}", String.valueOf(money));
     }
 
     public String notEnoughMoneyPlaceMessage(double money) {
-        return Utils.color(main.getConfig().getString("messages.not-enough-money-place").replace("{cost}", String.valueOf(money)));
+        return notEnoughMoneyPlaceMessage.replace("{cost}", String.valueOf(money));
     }
 
     public String notEnoughMoneyBuyMessage(double money) {
-        return Utils.color(main.getConfig().getString("messages.not-enough-money-shop").replace("{cost}", String.valueOf(money)));
+        return notEnoughMoneyBuyMessage.replace("{cost}", String.valueOf(money));
     }
 
     public String getWrongDirectionMessage() {
-        return Utils.color(main.getConfig().getString("messages.wrong-direction"));
+        return wrongDirectionMessage;
     }
 
     public String getNoSpaceBuyMessage() {
-        return Utils.color(main.getConfig().getString("messages.not-enough-space-buy"));
+        return noSpaceBuyMessage;
     }
 
     public String getCannotPlaceYLevelMessage() {
-        return Utils.color(main.getConfig().getString("messages.cannot-place-y-level"));
+        return cannotPlaceYLevelMessage;
     }
 
     public String getBuyConfirmationMessage(int amount) {
-        return Utils.color(main.getConfig().getString("messages.buy-success").replace("{amount}", String.valueOf(amount)));
+        return buyConfirmationMessage.replace("{amount}", String.valueOf(amount));
     }
 
     public String getNearbyPlayerMessage() {
-        return Utils.color(main.getConfig().getString("messages.cannot-place-nearby-players"));
+        return nearbyPlayerMessage;
     }
 
     public int getVerticalTravel() {
@@ -182,98 +265,44 @@ public class ConfigValues {
 
     public int getGUIRows() { return main.getConfig().getInt("gui.rows"); }
 
+    public boolean addBlockUnderGravity() {
+        return main.getConfig().getBoolean("add-block-under-gravity-blocks");
+    }
+
+    public ItemStack getGravityBlock() {
+        return gravityBlock;
+    }
+
     public ItemStack getExitItemStack() {
-        String rawMaterial = main.getConfig().getString("gui.exit.item");
-        Material mat;
-        if (rawMaterial.contains(":")) {
-            String[] materialSplit = rawMaterial.split(":");
-            try {
-                mat = Material.valueOf(materialSplit[0]);
-            } catch (IllegalArgumentException ex) {
-                mat = Material.valueOf("BARRIER");
-                main.getLogger().severe("Your exit item material is invalid!");
-            }
-            short damage;
-            try {
-                damage = Short.valueOf(materialSplit[1]);
-            } catch (IllegalArgumentException ex) {
-                damage = 1;
-                main.getLogger().severe("Your exit item damage/data is invalid!");
-            }
-            return new ItemStack(mat, 1, damage);
-        } else {
-            try {
-                mat = Material.valueOf(rawMaterial);
-            } catch (IllegalArgumentException ex) {
-                mat = Material.valueOf("BARRIER");
-                main.getLogger().severe("Your exit item material is invalid!");
-            }
-            return new ItemStack(mat, 1);
-        }
+        return exitItemStack;
     }
 
     public ItemStack getFillItemStack() {
-        String rawMaterial = main.getConfig().getString("gui.fill.item");
-        Material mat;
-        if (rawMaterial.contains(":")) {
-            String[] materialSplit = rawMaterial.split(":");
-            try {
-                mat = Material.valueOf(materialSplit[0]);
-            } catch (IllegalArgumentException ex) {
-                mat = Material.valueOf("AIR");
-                main.getLogger().severe("Your fill item material is invalid!");
-            }
-            short damage;
-            try {
-                damage = Short.valueOf(materialSplit[1]);
-            } catch (IllegalArgumentException ex) {
-                damage = 1;
-                main.getLogger().severe("Your fill item damage/data is invalid!");
-            }
-            return new ItemStack(mat, 1, damage);
-        } else {
-            try {
-                mat = Material.valueOf(rawMaterial);
-            } catch (IllegalArgumentException ex) {
-                mat = Material.valueOf("AIR");
-                main.getLogger().severe("Your fill block material is invalid!");
-            }
-            return new ItemStack(mat, 1);
-        }
+        return fillItemStack;
     }
 
     public String getGUITitle() {
-        return Utils.color(main.getConfig().getString("gui.title"));
+        return guiTitle;
     }
 
     public String getExitName() {
-        return Utils.color(main.getConfig().getString("gui.exit.name"));
+        return exitName;
     }
 
     public String getFillName() {
-        return Utils.color(main.getConfig().getString("gui.fill.name"));
+        return fillName;
     }
 
     public List<String> getExitLore() {
-        List<String> uncolouredList = main.getConfig().getStringList("gui.exit.lore");
-        List<String> colouredList = new ArrayList<>();
-        for (String s : uncolouredList) {
-            colouredList.add(Utils.color(s));
-        }
-        return colouredList;
+        return exitLore;
     }
 
     public List<String> getFillLore() {
-        List<String> uncolouredList = main.getConfig().getStringList("gui.fill.lore");
-        List<String> colouredList = new ArrayList<>();
-        for (String s : uncolouredList) {
-            colouredList.add(Utils.color(s));
-        }
-        return colouredList;
+        return fillLore;
     }
 
     public List<Integer> getExitSlots() {
-        return main.getConfig().getIntegerList("gui.exit.slots");
+        return exitSlots;
     }
 
     public boolean isExitGlowing() {
@@ -301,67 +330,7 @@ public class ConfigValues {
     }
 
     Set<String> getRecipeBuckets() {
-        if (main.getConfig().getConfigurationSection("recipes") != null) {
-            Set<String> bucketList = new HashSet<>();
-            for(String key : main.getConfig().getConfigurationSection("recipes").getKeys(false)) {
-                if (main.getBucketManager().getBuckets().containsKey(key)) bucketList.add(key);
-            }
-            return bucketList;
-        } else {
-            return null;
-        }
-    }
-
-    Map<Character, Map<Material, Short>> getIngredients(Bucket bucket) {
-        Map<Character, Map<Material, Short>> ingredients = new HashMap<>();
-        for (String ingredientSymbol : main.getConfig().getConfigurationSection("recipes."+bucket.getId()+".symbols").getKeys(false)) {
-            String rawMaterial = main.getConfig().getString("recipes."+bucket.getId()+".symbols."+ingredientSymbol);
-            Material mat;
-            short damage = 1;
-            if (rawMaterial.contains(":")) {
-                String[] materialSplit = rawMaterial.split(":");
-                try {
-                    mat = Material.valueOf(materialSplit[0]);
-                } catch (IllegalArgumentException ex) {
-                    main.getLogger().severe("Your ingredient material for symbol "+ingredientSymbol+" in bucket "+bucket.getId()+" is invalid!");
-                    return null;
-                }
-                try {
-                    damage = Short.valueOf(materialSplit[1]);
-                } catch (IllegalArgumentException ex) {
-                    main.getLogger().severe("Your ingredient data/damage for symbol "+ingredientSymbol+" in bucket "+bucket.getId()+" is invalid!");
-                    return null;
-                }
-            } else {
-                try {
-                    mat = Material.valueOf(rawMaterial);
-                } catch (IllegalArgumentException ex) {
-                    main.getLogger().severe("Your ingredient material for symbol "+ingredientSymbol+" in bucket "+bucket.getId()+" is invalid!");
-                    return null;
-                }
-            }
-            Map<Material, Short> item = new HashMap<>();
-            item.put(mat, damage);
-            ingredients.put(ingredientSymbol.toCharArray()[0], item);
-        }
-        if (ingredients.size() > 0) {
-            return ingredients;
-        } else {
-            return null;
-        }
-    }
-
-    int getRecipeAmount(Bucket bucket) {
-        return main.getConfig().getInt("recipes."+bucket.getId()+".outcome-amount");
-    }
-
-    List<String> getRecipeShape(Bucket bucket) {
-        List<String> shapeList = main.getConfig().getStringList("recipes."+bucket.getId()+".recipe");
-        if(shapeList.size() == 3) {
-            return shapeList;
-        } else {
-            return null;
-        }
+        return recipeBuckets;
     }
 
     double getConfigVersion() {

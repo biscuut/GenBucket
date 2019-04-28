@@ -76,6 +76,12 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
+            <artifactId>MC_1_8</artifactId>
+            <groupId>codes.biscuit.genbucket</groupId>
+            <version>MC_1_8</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
             <artifactId>WG_6</artifactId>
             <groupId>codes.biscuit.genbucket</groupId>
             <version>WG_6</version>
