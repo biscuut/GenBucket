@@ -138,8 +138,8 @@ public class PlayerListener implements Listener {
 
     @EventHandler
     public void onShopClick(InventoryClickEvent e) {
-        if (e.getClickedInventory() != null && e.getClickedInventory().getName() != null &&
-                e.getClickedInventory().getName().equals(main.getConfigValues().getGUITitle())) {
+        if (e.getClickedInventory() != null && e.getView().getTitle() != null &&
+                e.getView().getTitle().equals(main.getConfigValues().getGUITitle())) {
             e.setCancelled(true);
             Player p = (Player) e.getWhoClicked();
             if (e.getCurrentItem() != null && e.getCurrentItem().hasItemMeta() && e.getCurrentItem().getItemMeta().hasDisplayName()) {

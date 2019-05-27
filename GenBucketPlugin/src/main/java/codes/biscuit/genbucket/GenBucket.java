@@ -2,13 +2,16 @@ package codes.biscuit.genbucket;
 
 import codes.biscuit.genbucket.commands.GenBucketAdminCommand;
 import codes.biscuit.genbucket.commands.GenBucketCommand;
-import codes.biscuit.genbucket.listeners.PlayerListener;
 import codes.biscuit.genbucket.hooks.HookUtils;
+import codes.biscuit.genbucket.hooks.MetricsLite;
+import codes.biscuit.genbucket.listeners.PlayerListener;
 import codes.biscuit.genbucket.utils.BucketManager;
 import codes.biscuit.genbucket.utils.ConfigValues;
 import codes.biscuit.genbucket.utils.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
+
+import java.util.regex.Pattern;
 
 public class GenBucket extends JavaPlugin {
 
@@ -16,7 +19,7 @@ public class GenBucket extends JavaPlugin {
     private Utils utils;
     private HookUtils hookUtils;
     private BucketManager bucketManager;
-    private boolean underOneThirteen = false;
+    private int minecraftVersion = -1;
 
     @Override
     public void onEnable() {
@@ -33,11 +36,10 @@ public class GenBucket extends JavaPlugin {
         utils.registerRecipes();
         utils.updateConfig();
         configValues.loadBuckets();
-        String bukkitVersion = Bukkit.getVersion();
-        bukkitVersion = bukkitVersion.substring(bukkitVersion.indexOf("MC: ") + 4, bukkitVersion.length() - 1);
-        if (!bukkitVersion.equals("1.13")) {
-            underOneThirteen = true;
+        if (minecraftVersion == -1) {
+            minecraftVersion = Integer.valueOf(Bukkit.getBukkitVersion().split(Pattern.quote("-"))[0].split(Pattern.quote("."))[1]);
         }
+        new MetricsLite(this);
     }
 
     public ConfigValues getConfigValues() {
@@ -56,7 +58,8 @@ public class GenBucket extends JavaPlugin {
         return bucketManager;
     }
 
-    public boolean isUnderOneThirteen() {
-        return underOneThirteen;
+    // using mc 1.8 to 1.12
+    public boolean usingOldAPI() {
+        return minecraftVersion < 13;
     }
 }

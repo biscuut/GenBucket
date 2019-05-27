@@ -48,8 +48,8 @@ public class HookUtils {
             main.getLogger().info("Hooked into CoreProtect");
             enabledHooks.put(Hooks.COREPROTECT, new CoreProtectHook());
         }
-        if (main.isUnderOneThirteen()) {
-            main.getLogger().info("Hooked into Minecraft < 1.13");
+        if (main.usingOldAPI()) {
+            main.getLogger().info("Hooked into Minecraft 1.8-1.12");
             enabledHooks.put(Hooks.MINECRAFTONEEIGHT, new Minecraft_1_8());
         }
     }
