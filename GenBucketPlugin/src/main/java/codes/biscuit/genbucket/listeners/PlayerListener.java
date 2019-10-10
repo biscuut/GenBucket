@@ -120,7 +120,11 @@ public class PlayerListener implements Listener {
             if (!bucket.isInfinite()) {
                 if (!main.getHookUtils().getBypassPlayers().contains(p)) {
                     if (removeItem.getAmount() <= 1) {
-                        p.setItemInHand(null);
+                        if (main.serverIsAfterOffhand() && !p.getItemInHand().equals(removeItem)) {
+                            main.getHookUtils().clearOffhand(p);
+                        } else {
+                            p.setItemInHand(null);
+                        }
                     } else {
                         removeItem.setAmount(removeItem.getAmount() - 1);
                     }

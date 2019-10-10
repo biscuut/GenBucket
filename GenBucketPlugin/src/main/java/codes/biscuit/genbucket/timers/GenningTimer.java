@@ -38,6 +38,7 @@ public class GenningTimer extends BukkitRunnable {
         if (blockCounter < limit && !(currentBlock.getY() > main.getConfigValues().getMaxY()) &&
                 main.getHookUtils().canGenBlock(p, currentBlock.getLocation(), direction != BlockFace.UP && direction != BlockFace.DOWN) &&
                 (main.getConfigValues().getIgnoredBlockList().contains(currentBlock.getType()) || (bucket.isPatch() && currentBlock.getType() == bucket.getBlockItem().getType()) ||
+                        (bucket.isDelete() && !main.getConfigValues().getDeleteBlacklist().contains(currentBlock.getType())) ||
                         (bucket.getBlockItem().getType().hasGravity() && direction == BlockFace.DOWN && main.getConfigValues().addBlockUnderGravity() && currentBlock.getType() == main.getConfigValues().getGravityBlock().getType()))) {
             if (previousChunk == null || !previousChunk.equals(currentBlock.getChunk())) { // Check every chunk only once for efficiency.
                 previousChunk = currentBlock.getChunk();
@@ -46,9 +47,10 @@ public class GenningTimer extends BukkitRunnable {
                     return;
                 }
             }
-            main.getHookUtils().logBlock(p, currentBlock.getLocation(), currentBlock.getType(), currentBlock.getData());
+            main.getHookUtils().logRemoval(p, currentBlock.getLocation(), currentBlock.getType(), currentBlock.getData());
+            main.getHookUtils().logPlacement(p, currentBlock.getLocation(), bucket.getBlockItem().getType(), bucket.getBlockItem().getData().getData());
             currentBlock.setType(bucket.getBlockItem().getType());
-            if (main.usingOldAPI()) {
+            if (main.serverIsBeforeFlattening()) {
                 main.getHookUtils().setData(currentBlock, bucket.getBlockItem().getData().getData());
             }
             if (bucket.getBlockItem().getType().hasGravity() && direction == BlockFace.DOWN && main.getConfigValues().addBlockUnderGravity()) {
@@ -57,7 +59,7 @@ public class GenningTimer extends BukkitRunnable {
                         main.getHookUtils().canGenBlock(p, underblock.getLocation(), false) &&
                         (main.getConfigValues().getIgnoredBlockList().contains(underblock.getType()) || (bucket.isPatch() && underblock.getType() == bucket.getBlockItem().getType()))) {
                     underblock.setType(main.getConfigValues().getGravityBlock().getType());
-                    if (main.usingOldAPI()) {
+                    if (main.serverIsBeforeFlattening()) {
                         main.getHookUtils().setData(underblock, main.getConfigValues().getGravityBlock().getData().getData());
                     }
                 }

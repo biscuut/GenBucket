@@ -69,6 +69,7 @@ items:
       direction: 'ANY'
       count-by-chunk: false # This means it will count chunks instead of blocks while generating.
       patch: false # Whether this is a patch bucket- meaning it can go through blocks of its same type to patch holes.
+      delete: false # Whether this bucket will bypass the "ignored-blocks-list" and just place over every block in its path.
     gui:
       name: '&7Any Direction Cobble Bucket (BUY)' # The item name shown in the shop gui.
       material: 'COBBLESTONE' # The material name shown in the shop gui.
@@ -95,6 +96,7 @@ items:
       direction: 'HORIZONTAL'
       count-by-chunk: false
       patch: false
+      delete: false
     gui:
       name: '&7Horizontal Cobble Bucket (BUY)'
       material: 'OBSIDIAN'
@@ -142,6 +144,10 @@ ignored-blocks:
 #  - 'WATER'
 #  - 'STATIONARY_LAVA'
 #  - 'STATIONARY_WATER'
+
+# Which blocks will be ignored by delete buckets.
+delete-blacklist:
+  - 'BEDROCK' # Delete buckets will not delete bedrock.
 
 # Define custom recipes for your buckets here. Read the comments carefully to learn how they work.
 recipes:

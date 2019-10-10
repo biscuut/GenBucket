@@ -23,6 +23,13 @@ public class GenBucket extends JavaPlugin {
 
     @Override
     public void onEnable() {
+        if (minecraftVersion == -1) {
+            String mcVersion = Bukkit.getBukkitVersion().split(Pattern.quote("-"))[0].split(Pattern.quote("."))[1];
+            if (mcVersion.contains(".")) {
+                mcVersion = mcVersion.split(Pattern.quote("."))[0];
+            }
+            minecraftVersion = Integer.valueOf(mcVersion);
+        }
         bucketManager = new BucketManager();
         utils = new Utils(this);
         configValues = new ConfigValues(this);
@@ -36,9 +43,6 @@ public class GenBucket extends JavaPlugin {
         utils.registerRecipes();
         utils.updateConfig();
         configValues.loadBuckets();
-        if (minecraftVersion == -1) {
-            minecraftVersion = Integer.valueOf(Bukkit.getBukkitVersion().split(Pattern.quote("-"))[0].split(Pattern.quote("."))[1]);
-        }
         new MetricsLite(this);
     }
 
@@ -59,7 +63,12 @@ public class GenBucket extends JavaPlugin {
     }
 
     // using mc 1.8 to 1.12
-    public boolean usingOldAPI() {
+    public boolean serverIsBeforeFlattening() {
         return minecraftVersion < 13;
+    }
+
+    // using mc 1.8
+    public boolean serverIsAfterOffhand() {
+        return minecraftVersion > 8;
     }
 }

@@ -13,6 +13,7 @@ public class Bucket {
     private Direction direction;
     private boolean byChunk;
     private boolean isPatch;
+    private boolean isDelete;
     private ItemStack guiItem;
     private int slot;
     private double buyPrice;
@@ -132,6 +133,14 @@ public class Bucket {
 
     void setRecipeAmount(int recipeAmount) {
         this.recipeAmount = recipeAmount;
+    }
+
+    void setDelete(boolean delete) {
+        isDelete = delete;
+    }
+
+    public boolean isDelete() {
+        return isDelete;
     }
 
     @SuppressWarnings("unused")

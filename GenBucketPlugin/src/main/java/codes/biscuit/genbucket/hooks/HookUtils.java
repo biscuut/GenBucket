@@ -48,9 +48,20 @@ public class HookUtils {
             main.getLogger().info("Hooked into CoreProtect");
             enabledHooks.put(Hooks.COREPROTECT, new CoreProtectHook());
         }
-        if (main.usingOldAPI()) {
+        if (main.serverIsBeforeFlattening()) {
             main.getLogger().info("Hooked into Minecraft 1.8-1.12");
             enabledHooks.put(Hooks.MINECRAFTONEEIGHT, new Minecraft_1_8());
+        }
+        if (main.serverIsAfterOffhand()) {
+            main.getLogger().info("Hooked into Minecraft 1.9+");
+            enabledHooks.put(Hooks.MINECRAFTONENINE, new Minecraft_1_9());
+        }
+    }
+
+    public void clearOffhand(Player p) {
+        if (enabledHooks.containsKey(Hooks.MINECRAFTONENINE)) {
+            MinecraftAbstraction minecraftHook = (MinecraftAbstraction)enabledHooks.get(Hooks.MINECRAFTONENINE);
+            minecraftHook.clearOffhand(p);
         }
     }
 
@@ -243,10 +254,17 @@ public class HookUtils {
         economy.withdrawPlayer(p, money);
     }
 
-    public void logBlock(Player p, Location loc, Material mat, byte damage) {
+    public void logRemoval(Player p, Location loc, Material mat, byte damage) {
         if (enabledHooks.containsKey(Hooks.COREPROTECT)) {
             CoreProtectHook coreProtectHook = (CoreProtectHook)enabledHooks.get(Hooks.COREPROTECT);
-            coreProtectHook.logBlock(p.getName(), loc, mat, damage);
+            coreProtectHook.logRemoval(p.getName(), loc, mat, damage);
+        }
+    }
+
+    public void logPlacement(Player p, Location loc, Material mat, byte damage) {
+        if (enabledHooks.containsKey(Hooks.COREPROTECT)) {
+            CoreProtectHook coreProtectHook = (CoreProtectHook)enabledHooks.get(Hooks.COREPROTECT);
+            coreProtectHook.logPlacement(p.getName(), loc, mat, damage);
         }
     }
 
@@ -260,6 +278,7 @@ public class HookUtils {
         COREPROTECT,
         WORLDGUARD,
         WORLDBORDER,
-        MINECRAFTONEEIGHT
+        MINECRAFTONEEIGHT,
+        MINECRAFTONENINE
     }
 }

@@ -12,7 +12,8 @@ public class ConfigValues {
 
     private GenBucket main;
     private long blockSpeed;
-    private List<Material> ignoredMaterials;
+    private Set<Material> ignoredMaterials;
+    private Set<Material> deleteBlacklist;
     private String giveMessage;
     private String recieveMessage;
     private String noPermissionCommandMessage;
@@ -66,6 +67,7 @@ public class ConfigValues {
                 }
                 bucket.setByChunk(main.getConfig().getBoolean("items." + bucketId + ".block.count-by-chunk"));
                 bucket.setPatch(main.getConfig().getBoolean("items." + bucketId + ".block.patch"));
+                bucket.setDelete(main.getConfig().getBoolean("items." + bucketId + ".block.delete"));
                 ItemStack guiItem = main.getUtils().itemFromString(main.getConfig().getString("items." + bucketId + ".gui.material").toUpperCase());
                 itemMeta = guiItem.getItemMeta();
                 itemMeta.setDisplayName(Utils.color(main.getConfig().getString("items." + bucketId + ".gui.name")));
@@ -113,10 +115,17 @@ public class ConfigValues {
         else if (bps>20) bps = 20;
         blockSpeed = Math.round(1 / bps * 20);
 
-        ignoredMaterials = new ArrayList<>();
+        ignoredMaterials = EnumSet.noneOf(Material.class);
         for (String rawMaterial : main.getConfig().getStringList("ignored-blocks")) {
             try {
                 ignoredMaterials.add(Material.valueOf(rawMaterial));
+            } catch (Exception ignored) {}
+        }
+
+        deleteBlacklist = EnumSet.noneOf(Material.class);
+        for (String rawMaterial : main.getConfig().getStringList("delete-blacklist")) {
+            try {
+                deleteBlacklist.add(Material.valueOf(rawMaterial));
             } catch (Exception ignored) {}
         }
 
@@ -157,7 +166,7 @@ public class ConfigValues {
         return blockSpeed;
     }
 
-    public List<Material> getIgnoredBlockList() {
+    public Set<Material> getIgnoredBlockList() {
         return ignoredMaterials;
     }
 
@@ -351,5 +360,9 @@ public class ConfigValues {
 
     public boolean cancellingEnabled() {
         return main.getConfig().getBoolean("enable-cancelling");
+    }
+
+    public Set<Material> getDeleteBlacklist() {
+        return deleteBlacklist;
     }
 }

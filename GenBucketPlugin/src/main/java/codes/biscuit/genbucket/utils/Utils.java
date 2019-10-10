@@ -182,7 +182,7 @@ public class Utils {
                     }
                 } catch (Exception ignored) {}
             }
-        }.runTask(main);
+        }.runTaskAsynchronously(main);
     }
 
     public Map<Location, GenningTimer> getCurrentGens() {

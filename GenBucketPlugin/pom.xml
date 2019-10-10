@@ -9,7 +9,7 @@
     <artifactId>GenBucketPlugin</artifactId>
     <packaging>jar</packaging>
     <name>GenBucketPlugin</name>
-    <version>1.0.5</version>
+    <version>1.0.7</version>
 
     <repositories>
         <repository>
@@ -42,7 +42,7 @@
         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot-api</artifactId>
-            <version>1.8.8-R0.1-SNAPSHOT</version>
+            <version>1.13.2-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -91,6 +91,12 @@
             <artifactId>MC_1_8</artifactId>
             <groupId>codes.biscuit.genbucket</groupId>
             <version>MC_1_8</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <artifactId>MC_1_9</artifactId>
+            <groupId>codes.biscuit.genbucket</groupId>
+            <version>MC_1_9</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
