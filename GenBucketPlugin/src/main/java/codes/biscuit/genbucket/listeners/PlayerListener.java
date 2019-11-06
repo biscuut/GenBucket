@@ -1,8 +1,10 @@
 package codes.biscuit.genbucket.listeners;
 
 import codes.biscuit.genbucket.GenBucket;
+import codes.biscuit.genbucket.event.GenBucketPlaceEvent;
 import codes.biscuit.genbucket.timers.GenningTimer;
 import codes.biscuit.genbucket.utils.Bucket;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -98,6 +100,11 @@ public class PlayerListener implements Listener {
                 if (!main.getConfigValues().getWrongDirectionMessage().equals("")) {
                     p.sendMessage(main.getConfigValues().getWrongDirectionMessage());
                 }
+                return;
+            }
+            GenBucketPlaceEvent event = new GenBucketPlaceEvent(p, bucket, block, direction, removeItem);
+            Bukkit.getPluginManager().callEvent(event);
+            if (event.isCancelled()) {
                 return;
             }
             switch (bucket.getDirection()) {
